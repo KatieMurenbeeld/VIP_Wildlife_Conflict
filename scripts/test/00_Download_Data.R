@@ -4,7 +4,7 @@
 options(  gargle_oauth_cache = ".secrets",  gargle_oauth_email = TRUE)
 
 #Assign the link for the GDrive folder to an object
-folder_url <- "https://docs.google.com/spreadsheets/d/1of5iDf_SF7pHCtXuwpQAGnAhEcOENGwIWcaRg38uAUg/edit#gid=0"
+folder_url <- "https://docs.google.com/spreadsheets/d/1EFbr-GahLJ0Hl01YYheOAjRny8GFxHryFjnD5RNbQUY/edit#gid=0"
 
 #drive_get will open the authorization window; you have to give Rstudio access to edit files once you do that you'll get the necessary attributes for the GDrive folder
 folder <- drive_get(as_id(folder_url))
