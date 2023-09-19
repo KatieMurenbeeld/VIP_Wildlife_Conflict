@@ -2,6 +2,7 @@ library(shiny)
 library(dplyr)
 library(ggplot2)
 
+
 # Define UI for app that can generate a csv file from input options
 ui <- fluidPage(
   titlePanel("Wildlife Conflict Data Entry"),
