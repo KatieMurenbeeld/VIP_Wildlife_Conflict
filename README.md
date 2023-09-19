@@ -1,1 +1,2 @@
-# VIP_Wildlife_Conflict
+# Vertically Integrated Program: Wildlife-Human Conflict
+## Text Analysis and Natural Language Processing
