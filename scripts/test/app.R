@@ -82,7 +82,9 @@ ui <- fluidPage(
    column(3,
           textInput("comments",
                     h3("Comments"),
-                    value = ""))
+                    value = "")),
+   
+   actionButton("append", "Save Entry")
   )
 )
 
@@ -90,8 +92,8 @@ ui <- fluidPage(
 
 # Define server logic ----
 server <- function(input, output) {
-  
-}
+  }
+
 
 # Run the app ----
 shinyApp(ui = ui, server = server)
