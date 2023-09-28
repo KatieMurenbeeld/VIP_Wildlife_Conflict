@@ -7,6 +7,9 @@ gs4_auth(cache = ".secrets", email = "katiemurenbeeld@boisestate.edu")
 
 sheet_id <- "https://docs.google.com/spreadsheets/d/1EFbr-GahLJ0Hl01YYheOAjRny8GFxHryFjnD5RNbQUY/edit#gid=0"
 
+fields <- c("Article Title",	"Publication",	"State",
+            "City",	"Species",	"Reviewer 1",	"Reviewer 1 Date",
+            "Focus",	"Value Orientation",	"Comments")
 
 # Define UI for app that can generate a csv file from input options
 ui <- fluidPage(
@@ -65,6 +68,21 @@ ui <- fluidPage(
   actionButton("submit", "Submit")
   )
 
+# Define function to use in server logic
+table <- "entries"
+
+saveData <- function(data) {
+  # The data must be a dataframe rather than a named vector
+  data <- data %>% as.list() %>% data.frame()
+  # Add the data as a new row
+  sheet_append(sheet_id, data)
+}
+
+loadData <- function() {
+  # Read the data
+  read_sheet(sheet_id)
+}
+
 # Define server logic ----
 server <- function(input, output, session) {
   
@@ -74,7 +92,7 @@ server <- function(input, output, session) {
     data
   }) 
   
-  # When the Submit button is clicks, save the form data
+  # When the Submit button is clicked, save the form data
   observeEvent(input$submit, {
     saveData(formData())
   })
