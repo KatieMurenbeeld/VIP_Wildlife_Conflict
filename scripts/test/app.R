@@ -94,10 +94,11 @@ ui <- fluidPage(
   )
 )
 
-# Need a button widget to append to google sheet
-
 # Define server logic ----
-server <- function(input, output) {
+server <- function(input, output, session) {
+  
+  # Save the data entered and append to a Google Sheet
+  output$append <- 
   }
 
 
