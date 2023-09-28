@@ -1,6 +1,11 @@
 library(shiny)
 library(dplyr)
 library(ggplot2)
+library(googlesheets4)
+
+gs4_auth(cache = ".secrets", email = "katiemurenbeeld@boisestate.edu")
+
+sheet_id <- "https://docs.google.com/spreadsheets/d/1EFbr-GahLJ0Hl01YYheOAjRny8GFxHryFjnD5RNbQUY/edit#gid=0"
 
 
 # Define UI for app that can generate a csv file from input options
@@ -36,8 +41,8 @@ ui <- fluidPage(
                     h3("City"),
                     value = "")),
    column(3,
-          selectInput("animal", 
-                      h3("Animal"),
+          selectInput("species", 
+                      h3("Species"),
                       choices = list("Grizzly Bear" = 1,
                                      "Boar" = 2,
                                      "Beaver" = 3,
