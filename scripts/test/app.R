@@ -14,11 +14,12 @@ library(googlesheets4)
 
 gs4_auth(cache = ".secrets", email = "katiemurenbeeld@boisestate.edu")
 
-sheet_id <- "https://docs.google.com/spreadsheets/d/1EFbr-GahLJ0Hl01YYheOAjRny8GFxHryFjnD5RNbQUY"
+sheet_id <- "https://docs.google.com/spreadsheets/d/1EFbr-GahLJ0Hl01YYheOAjRny8GFxHryFjnD5RNbQUY/edit#gid=0"
 
-fields <- c("Article Title",	"Publication",	"State",
-            "City",	"Species",	"Reviewer 1",	"Reviewer 1 Date",
-            "Focus",	"Value Orientation",	"Comments")
+# the fields need to match the google sheet column headers AND the input IDs
+fields <- c("article_title",	"publication",	"state",
+            "city",	"species",	"reviewer",	"review_date",
+            "type", "focus",	"value_orientation",	"comments")
 
 # Define function to use in server logic
 table <- "entries"
@@ -36,7 +37,7 @@ loadData <- function() {
 }
 
 
-# Define UI for app that can generate a csv file from input options
+# Define UI for app that can append to a google sheet  from input options
 shinyApp(
   ui <- fluidPage(
     DT::dataTableOutput("entries", width = 300), tags$hr(),
@@ -66,14 +67,14 @@ shinyApp(
                                "Wolf" = 6,
                                "Other" = 7),
                 selected = 1),
-    dateInput("reviewer_1_date", "Reviewer 1 Date", "2023-09-01"),
-    selectInput("reviewer_1", "Reviewer 1",
+    selectInput("reviewer", "Reviewer",
                 choices = list("LP" = 1,
                                "SB" = 2,
                                "BW" = 3,
                                "KM" = 4,
                                "MW" = 5),
                 selected = 1),
+    dateInput("review_date", "Review Date", "2023-09-01"),
     selectInput("type", "Type",
                 choices = list("Human-Wildlife" = 1,
                                "Human-Human" = 2,
@@ -87,7 +88,7 @@ shinyApp(
                                "Practicioner" = 4,
                                "Ecosystem" = 5),
                 selected = 1),
-    sliderInput("value", "Value Orientation",
+    sliderInput("value_orientation", "Value Orientation",
                 min = 1, max = 7,
                 value = 1),
     textInput("comments", "Comments", ""),
@@ -95,7 +96,7 @@ shinyApp(
     ),
   
   # Define server logic ----
-  server = function(input, output, session) {
+  server <- function(input, output, session) {
     
     # Whenever a field is filled, aggregate all form data
     formData <- reactive({
