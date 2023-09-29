@@ -2,6 +2,7 @@ library(shiny)
 library(dplyr)
 library(ggplot2)
 library(googlesheets4)
+library(rsconnect)
 
 
 ### Before running the app copy the following lines of code into the console
