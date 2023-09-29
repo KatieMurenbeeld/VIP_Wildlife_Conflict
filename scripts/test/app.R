@@ -74,7 +74,7 @@ shinyApp(
                                "KM",
                                "MW"),
                 selected = ""),
-    dateInput("review_date", "Review Date", "2023-09-01"),
+    dateInput("review_date", "Review Date", "2023-09-01", format = "yyyy/mm/dd"),
     selectInput("type", "Type",
                 choices = list("Human-Wildlife",
                                "Human-Human",
@@ -106,6 +106,7 @@ shinyApp(
     
     # When the Submit button is clicked, save the form data
     observeEvent(input$submit, {
+      data.frame(A = as.character(format(input$review_date, "yyyy-mm-dd")))
       saveData(formData())
     })
     
