@@ -4,6 +4,7 @@ library(ggplot2)
 library(googlesheets4)
 library(rsconnect)
 library(DT)
+library(lubridate)
 
 
 ### Before running the app copy the following lines of code into the console
@@ -54,6 +55,7 @@ table <- "entries"
 saveData <- function(data) {
   # The data must be a dataframe rather than a named vector
   data <- data %>% as.list() %>% data.frame()
+  #data$review_date <- as_date(date$review_date)
   # Add the data as a new row
   sheet_append(sheet_id, data)
 }
@@ -80,7 +82,7 @@ shinyApp(
     selectInput("focus", "Focus", choices = conflict_focus, selected = ""),
     sliderInput("value_orientation", "Value Orientation", min = 1, max = 7, value = 1),
     textInput("comments", "Comments", ""),
-    actionButton("submit", "Submit")
+    actionButton("submit", "Submit"),
     ),
   
   # Define server logic ----
@@ -96,16 +98,17 @@ shinyApp(
     
     # When the Submit button is clicked, save the form data
     observeEvent(input$submit, {
-      data.frame(review_date = as.character(format(input$review_date, "yyyy-mm-dd")))
+      #data.frame(review_date = as.character(format(input$review_date, "yyyy-mm-dd")))
+      #data.frame(review_date = as_date(input$review_date))
       saveData(formData())
     })
     
     # Show the previous entries. Can take this out
     # (update with current entry when Submit is clicked)
-    #output$entries <- DT::renderDataTable({
+    #output$entries <- renderDataTable({
     #  input$submit
     #  loadData()
-    #})     
+   # })     
   }
 )
 
