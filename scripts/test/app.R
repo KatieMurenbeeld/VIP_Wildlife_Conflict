@@ -67,7 +67,7 @@ loadData <- function() {
 # Define UI for app that can append to a google sheet  from input options
 shinyApp(
   ui <- fluidPage(
-    DT::dataTableOutput("entries", width = 300), tags$hr(),
+    dataTableOutput("entries", width = 300), tags$hr(),
     titlePanel("Wildlife Conflict Data Entry"),
     textInput("article_title", "Article Title", ""),
     textInput("publication", "Publication", ""),
@@ -100,12 +100,12 @@ shinyApp(
       saveData(formData())
     })
     
-    # Show the previous entries
+    # Show the previous entries. Can take this out
     # (update with current entry when Submit is clicked)
-    output$entries <- DT::renderDataTable({
-      input$submit
-      loadData()
-    })     
+    #output$entries <- DT::renderDataTable({
+    #  input$submit
+    #  loadData()
+    #})     
   }
 )
 
