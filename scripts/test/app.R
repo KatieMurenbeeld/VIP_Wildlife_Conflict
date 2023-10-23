@@ -23,6 +23,31 @@ fields <- c("article_title",	"publication",	"state",
             "city",	"species",	"reviewer",	"review_date",
             "type", "focus",	"value_orientation",	"comments")
 
+reviewer_list <- c("LP",
+                   "SB",
+                   "BW",
+                   "KM",
+                   "MW")
+
+species_list <- c("Grizzly Bear",
+                  "Boar",
+                  "Beaver",
+                  "Buffalo",
+                  "Mountain Lion",
+                  "Wolf",
+                  "Other")
+
+conflict_type <- c("Human-Wildlife",
+                   "Human-Human",
+                   "Nature-Wildlife",
+                   "Unstated Conflict")
+
+conflict_focus <- c("Wildlife",
+                    "People",
+                    "Policy",
+                    "Practicioner",
+                    "Ecosystem")
+
 # Define function to use in server logic
 table <- "entries"
 
@@ -48,39 +73,12 @@ shinyApp(
     textInput("publication", "Publication", ""),
     selectInput("state", "State" , state.abb, selected = ""),
     textInput("city", "City", ""),
-    selectInput("species", "Species",
-                choices = list("Grizzly Bear",
-                               "Boar",
-                               "Beaver",
-                               "Buffalo",
-                               "Mountain Lion",
-                               "Wolf",
-                               "Other"),
-                selected = ""),
-    selectInput("reviewer", "Reviewer",
-                choices = list("LP",
-                               "SB",
-                               "BW",
-                               "KM",
-                               "MW"),
-                selected = ""),
+    selectInput("species", "Species", choices = species_list, selected = ""),
+    selectInput("reviewer", "Reviewer", choices = reviewer_list, selected = ""),
     dateInput("review_date", "Review Date", "2023-09-01", format = "mm/dd/yyyy"),
-    selectInput("type", "Type",
-                choices = list("Human-Wildlife",
-                               "Human-Human",
-                               "Nature-Wildlife",
-                               "Unstated Conflict"),
-                selected = ""),
-    selectInput("focus", "Focus",
-                choices = list("Wildlife",
-                               "People",
-                               "Policy",
-                               "Practicioner",
-                               "Ecosystem"),
-                selected = ""),
-    sliderInput("value_orientation", "Value Orientation",
-                min = 1, max = 7,
-                value = 1),
+    selectInput("type", "Type", choices = conflict_type, selected = ""),
+    selectInput("focus", "Focus", choices = conflict_focus, selected = ""),
+    sliderInput("value_orientation", "Value Orientation", min = 1, max = 7, value = 1),
     textInput("comments", "Comments", ""),
     actionButton("submit", "Submit")
     ),
