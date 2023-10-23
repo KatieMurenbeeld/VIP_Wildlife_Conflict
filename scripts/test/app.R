@@ -88,6 +88,8 @@ shinyApp(
     
     # Whenever a field is filled, aggregate all form data
     formData <- reactive({
+      #input$review_date <- as.character(input$review_date) 
+      # code above results in Warning: Error in $<-: Can't modify read-only reactive value 'review_date'
       data <- sapply(fields, function(x) input[[x]])
       #data$review_date <- as.character(data$review_date)
     })
