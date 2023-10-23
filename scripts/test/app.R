@@ -3,7 +3,7 @@ library(dplyr)
 library(ggplot2)
 library(googlesheets4)
 library(rsconnect)
-library(lubridate)
+library(DT)
 
 
 ### Before running the app copy the following lines of code into the console
@@ -76,7 +76,7 @@ shinyApp(
                                "KM",
                                "MW"),
                 selected = ""),
-    dateInput("review_date", "Review Date", "2023-09-01", format = "yyyy/mm/dd"),
+    dateInput("review_date", "Review Date", "2023-09-01", format = "mm/dd/yyyy"),
     selectInput("type", "Type",
                 choices = list("Human-Wildlife",
                                "Human-Human",
@@ -103,12 +103,12 @@ shinyApp(
     # Whenever a field is filled, aggregate all form data
     formData <- reactive({
       data <- sapply(fields, function(x) input[[x]])
-      data
+      #data$review_date <- as.character(data$review_date)
     })
     
     # When the Submit button is clicked, save the form data
     observeEvent(input$submit, {
-      data.frame(A = as.character(format(input$review_date, "yyyy-mm-dd")))
+      data.frame(review_date = as.character(format(input$review_date, "yyyy-mm-dd")))
       saveData(formData())
     })
     
