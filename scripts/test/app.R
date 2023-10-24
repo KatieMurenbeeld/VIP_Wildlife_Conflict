@@ -89,8 +89,8 @@ shinyApp(
     
     # Whenever a field is filled, aggregate all form data
     formData <- reactive({
-      data <- sapply(fields, function(x) input[[x]]) %>%
-        data.frame(G = as.character(format(input$review_date)))
+      data <- sapply(fields, function(x) input[[x]])
+      data <- data.frame(G = as.character(format(input$review_date)))
     })
     
     
