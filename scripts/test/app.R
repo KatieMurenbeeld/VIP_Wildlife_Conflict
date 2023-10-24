@@ -55,7 +55,6 @@ table <- "entries"
 saveData <- function(data) {
   # The data must be a dataframe rather than a named vector
   data <- data %>% as.list() %>% data.frame()
-  #data$review_date <- as_date(date$review_date)
   # Add the data as a new row
   sheet_append(sheet_id, data)
 }
@@ -105,13 +104,14 @@ shinyApp(
     
     # Show the previous entries. Can take this out
     # (update with current entry when Submit is clicked)
-    #output$entries <- renderDataTable({
-    #  input$submit
-    #  loadData()
-   # })     
+    output$entries <- renderDataTable({
+      input$submit
+      data$review_date <- format(as.Date(date$review_date,  origin="2023-01-01"), "%m/%d/%Y")
+      loadData()
+    })     
   }
 )
-
+#data$date <- format(as.Date(data$date, origin="1970-01-01"), "%m/%d/%Y")
 
 # Run the app ----
 shinyApp(ui = ui, server = server)
