@@ -55,6 +55,8 @@ table <- "entries"
 saveData <- function(data) {
   # The data must be a dataframe rather than a named vector
   data <- data %>% as.list() %>% data.frame()
+  data <- data %>%
+    mutate(review_date = as.character(review_date))
   # Add the data as a new row
   sheet_append(sheet_id, data)
 }
@@ -76,7 +78,7 @@ shinyApp(
     textInput("city", "City", ""),
     selectInput("species", "Species", choices = species_list, selected = ""),
     selectInput("reviewer", "Reviewer", choices = reviewer_list, selected = ""),
-    dateInput("review_date", "Review Date", "2023-09-01", format = "mm/dd/yyyy"),
+    dateInput("review_date", "Review Date", "2023-09-01"),
     selectInput("type", "Type", choices = conflict_type, selected = ""),
     selectInput("focus", "Focus", choices = conflict_focus, selected = ""),
     sliderInput("value_orientation", "Value Orientation", min = 1, max = 7, value = 1),
@@ -91,17 +93,19 @@ shinyApp(
     formData <- reactive({
       # as.character(input$review_date) 
       # code above results in Warning: Error in $<-: Can't modify read-only reactive value 'review_date'
-      data.frame(A = as.character(format(input$review_date, "%d.%m.%Y")))
+      #data.frame(A = as.character(format(input$review_date, "%d.%m.%Y")))
       data <- sapply(fields, function(x) input[[x]])
-      data
+      #data.frame(review_date = as.character(format(input$review_date)))
+      #data
       #data$review_date <- format(as.Date(date$review_date,  origin="2023-01-01"), "%m/%d/%Y")
     })
     
     
     # When the Submit button is clicked, save the form data
     observeEvent(input$submit, {
-      #data.frame(review_date = as.character(format(input$review_date, "yyyy-mm-dd")))
-      #data.frame(review_date = as_date(input$review_date))
+      #data.frame(review_date = as.character(input$review_date))
+      #data.frame(review_date = ymd(input$review_date))
+      #review_date <- as_date(input$review_date)
       saveData(formData())
     })
     
