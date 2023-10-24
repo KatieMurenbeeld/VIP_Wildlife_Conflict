@@ -106,7 +106,7 @@ shinyApp(
     # (update with current entry when Submit is clicked)
     output$entries <- renderDataTable({
       input$submit
-      data$review_date <- format(as.Date(date$review_date,  origin="2023-01-01"), "%m/%d/%Y")
+      #data$review_date <- format(as.Date(date$review_date,  origin="2023-01-01"), "%m/%d/%Y")
       loadData()
     })     
   }
