@@ -55,8 +55,8 @@ table <- "entries"
 saveData <- function(data) {
   # The data must be a dataframe rather than a named vector
   data <- data %>% as.list() %>% data.frame()
-  data <- data %>%
-    mutate(review_date = as.character(review_date))
+  #data <- data %>%
+  #  mutate(review_date = as.character(review_date))
   # Add the data as a new row
   sheet_append(sheet_id, data)
 }
