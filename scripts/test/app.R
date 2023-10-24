@@ -91,7 +91,7 @@ shinyApp(
     formData <- reactive({
       data <- sapply(fields, function(x) input[[x]])
       data <- data %>% as.list() %>% data.frame() %>%
-        data.frame(review_date = as.character(review_date))
+        data.frame(review_date = as.character(data$review_date))
     })
     
     
