@@ -92,8 +92,11 @@ shinyApp(
       #input$review_date <- as.character(input$review_date) 
       # code above results in Warning: Error in $<-: Can't modify read-only reactive value 'review_date'
       data <- sapply(fields, function(x) input[[x]])
+      data
       #data$review_date <- as.character(data$review_date)
     })
+    
+    data$review_date <- format(as.Date(date$review_date,  origin="2023-01-01"), "%m/%d/%Y")
     
     # When the Submit button is clicked, save the form data
     observeEvent(input$submit, {
