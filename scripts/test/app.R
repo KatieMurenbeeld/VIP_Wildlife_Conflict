@@ -54,8 +54,7 @@ table <- "entries"
 
 saveData <- function(data) {
   # The data must be a dataframe rather than a named vector
-  data <- data %>% as.list() %>% data.frame() %>%
-    mutate(across(review_date, as.character))
+  #data <- data %>% as.list() %>% data.frame() 
   # Add the data as a new row
   sheet_append(sheet_id, data)
 }
@@ -91,6 +90,7 @@ shinyApp(
     # Whenever a field is filled, aggregate all form data
     formData <- reactive({
       data <- sapply(fields, function(x) input[[x]])
+      data <- data %>% as.list() %>% data.frame()
     })
     
     
