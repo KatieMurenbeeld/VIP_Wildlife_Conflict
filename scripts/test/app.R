@@ -55,8 +55,6 @@ table <- "entries"
 saveData <- function(data) {
   # The data must be a dataframe rather than a named vector
   data <- data %>% as.list() %>% data.frame() 
-  #data <- data %>%
-  #  mutate(across(review_date, as.character))
   # Add the data as a new row
   sheet_append(sheet_id, data)
 }
@@ -91,21 +89,13 @@ shinyApp(
     
     # Whenever a field is filled, aggregate all form data
     formData <- reactive({
-      # as.character(input$review_date) 
-      # code above results in Warning: Error in $<-: Can't modify read-only reactive value 'review_date'
-      #data.frame(A = as.character(format(input$review_date, "%d.%m.%Y")))
-      data <- sapply(fields, function(x) input[[x]]) %>% 
-        mutate(across(review_date, as.character))
-      #data
-      #data$review_date <- format(as.Date(date$review_date,  origin="2023-01-01"), "%m/%d/%Y")
+      data <- sapply(fields, function(x) input[[x]]) %>%
+        data.frame(G = as.character(format(input$review_date)))
     })
     
     
     # When the Submit button is clicked, save the form data
     observeEvent(input$submit, {
-      #data.frame(review_date = as.character(input$review_date))
-      #data.frame(review_date = ymd(input$review_date))
-      #review_date <- as_date(input$review_date)
       saveData(formData())
     })
     
@@ -113,12 +103,10 @@ shinyApp(
     # (update with current entry when Submit is clicked)
     output$entries <- renderDataTable({
       input$submit
-      #data$review_date <- format(as.Date(date$review_date,  origin="2023-01-01"), "%m/%d/%Y")
       loadData()
     })     
   }
 )
-#data$date <- format(as.Date(data$date, origin="1970-01-01"), "%m/%d/%Y")
 
 # Run the app ----
 shinyApp(ui = ui, server = server)
