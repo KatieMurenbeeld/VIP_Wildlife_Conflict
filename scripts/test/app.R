@@ -74,14 +74,13 @@ saveData <- function(data) {
 
 loadData <- function() {
   # Read the data
-  read_sheet(sheet_id, col_types = "cicccccccDcDccic")
+  read_sheet(sheet_id)
 }
 
 
 # Define UI for app that can append to a google sheet  from input options
 shinyApp(
   ui <- fluidPage(
-    #useShinyFeedback(),
     dataTableOutput("entries", width = 300), tags$hr(),
     titlePanel("Wildlife Conflict Data Entry"),
     textInput("Article Title", "Article Title", ""),
@@ -91,7 +90,7 @@ shinyApp(
                 selected = ""),
     textInput("Newspaper", "Newspaper", value = ""),
     textInput("Publication City", "Publication City", ""),
-    selectInput("Publication State", "Publication State" , 
+    selectInput("Publication State", "Publication State", 
                 state.abb, 
                 selected = ""),
     textInput("Link", "Link", "https://"),
@@ -105,13 +104,11 @@ shinyApp(
               value = Sys.Date(),
               format = "mm/dd/yyyy"),
     selectInput("Reviewer2", "Reviewer2", 
-                choices = reviewer_list, 
+                choices = "Not reviewed", 
                 selected = ""),
-    dateInput("Reviewer2_date", "Reviewer2 Date", 
-              value = NA,
-              format = "mm/dd/yyyy"),
-    #textInput("review_date", "Review Date", "mm/dd/yyyy"),
-    #textOutput("date"),
+    selectInput("Reviewer2_date", "Reviewer2 Date", 
+                choices = "Not reviewed",
+                selected = ""),
     selectInput("Type of Conflict", "Type of Conflict", 
                 choices = conflict_type, 
                 selected = ""),
@@ -137,9 +134,9 @@ shinyApp(
     
     
     # When the Submit button is clicked, save the form data
-    #observeEvent(input$submit, {
-    #  saveData(formData())
-    #})
+    observeEvent(input$submit, {
+      saveData(formData())
+    })
     
     # Show the previous entries. Can take this out
     # (update with current entry when Submit is clicked)
