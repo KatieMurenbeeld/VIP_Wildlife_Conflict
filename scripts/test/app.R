@@ -127,8 +127,8 @@ shinyApp(
     # Whenever a field is filled, aggregate all form data
     formData <- eventReactive(input$submit, {
       data <- sapply(fields, function(x) input[[x]])
-      data <- data %>% as.list() 
-      #  data.frame(as.character(input$review_date))
+      data <- data %>% as.list() %>% as.data.frame()
+      data
     })
     
     
