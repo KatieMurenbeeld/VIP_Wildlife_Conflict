@@ -74,7 +74,7 @@ saveData <- function(data) {
 
 loadData <- function() {
   # Read the data
-  read_sheet(sheet_id)
+  read_sheet(sheet_id, col_types = "cicccccccDcDccic")
 }
 
 
@@ -137,9 +137,9 @@ shinyApp(
     
     
     # When the Submit button is clicked, save the form data
-    observeEvent(input$submit, {
-      saveData(formData())
-    })
+    #observeEvent(input$submit, {
+    #  saveData(formData())
+    #})
     
     # Show the previous entries. Can take this out
     # (update with current entry when Submit is clicked)
