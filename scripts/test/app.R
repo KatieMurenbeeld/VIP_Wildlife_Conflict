@@ -21,15 +21,26 @@ gs4_auth(cache = ".secrets", email = "katiemurenbeeld@boisestate.edu")
 sheet_id <- "https://docs.google.com/spreadsheets/d/1EFbr-GahLJ0Hl01YYheOAjRny8GFxHryFjnD5RNbQUY/edit#gid=0"
 
 # the fields need to match the google sheet column headers AND the input IDs
-fields <- c("article_title",	"publication",	"state",
-            "city",	"species",	"reviewer",	"review_date",
-            "type", "focus",	"value_orientation",	"comments")
+fields <- c("Article Title", "Old Spreadsheet",	"Article Type", 
+            "Newspaper", "Publication City", "Publication State",
+            "Link", "Species", "Reviewer1", "Reviewer1_date", 
+            "Reviewer2", "Reviewer2_date", "Type of Conflict",
+            "Focus is", "Value Orientation(1-7)", "Notes")
 
-reviewer_list <- c("LP",
-                   "SB",
-                   "BW",
-                   "KM",
-                   "MW")
+articletype_list <- c("newswire", 
+                      "online", 
+                      "blog", 
+                      "newspaper", 
+                      "local article")
+
+reviewer_list <- c("LPotter",
+                   "SBreedlove",
+                   "BWall",
+                   "KMurenbeeld",
+                   "MWilliamson",
+                   "MG", 
+                   "PGill",
+                   "HK")
 
 species_list <- c("Grizzly Bear",
                   "Boar",
@@ -72,18 +83,24 @@ shinyApp(
     #useShinyFeedback(),
     dataTableOutput("entries", width = 300), tags$hr(),
     titlePanel("Wildlife Conflict Data Entry"),
-    textInput("article_title", "Article Title", ""),
-    textInput("publication", "Publication", ""),
-    selectInput("state", "State" , state.abb, selected = ""),
-    textInput("city", "City", ""),
-    selectInput("species", "Species", choices = species_list, selected = ""),
-    selectInput("reviewer", "Reviewer", choices = reviewer_list, selected = ""),
-    textInput("review_date", "Review Date", "mm/dd/yyyy"),
+    textInput("Article Title", "Article Title", ""),
+    numericInput("Old Spreadsheet", "Old Spreadsheet"),
+    selectInput("Article Type", "Article Type", choices = articletype_list, selected = ""),
+    textInput("Newspaper", "Newspaper", value = ""),
+    textInput("Publication City", "Publication City", ""),
+    selectInput("Publication State", "Publication State" , state.abb, selected = ""),
+    textInput("Link", "Link", "https://"),
+    selectInput("Species", "Species", choices = species_list, selected = ""),
+    selectInput("Reviewer1", "Reviewer1", choices = reviewer_list, selected = ""),
+    dateInput("Reviewer1_date", "Reviewer1 Date", value = "10/31/2023", format = "mm/dd/yyyy"),
+    selectInput("Reviewer2", "Reviewer2", choices = reviewer_list, selected = ""),
+    dateInput("Reviewer2_date", "Reviewer2 Date", value = "10/31/2023", format = "mm/dd/yyyy"),
+    #textInput("review_date", "Review Date", "mm/dd/yyyy"),
     #textOutput("date"),
-    selectInput("type", "Type", choices = conflict_type, selected = ""),
-    selectInput("focus", "Focus", choices = conflict_focus, selected = ""),
-    sliderInput("value_orientation", "Value Orientation", min = 1, max = 7, value = 1),
-    textInput("comments", "Comments", ""),
+    selectInput("Type of Conflict", "Type of Conflict", choices = conflict_type, selected = ""),
+    selectInput("Focus is", "Focus is", choices = conflict_focus, selected = ""),
+    sliderInput("Value Orientation(1-7)", "Value Orientation", min = 1, max = 7, value = 1),
+    textInput("Notes", "Notess", ""),
     actionButton("submit", "Submit"),
     ),
   
