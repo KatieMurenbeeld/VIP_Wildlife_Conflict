@@ -94,7 +94,7 @@ shinyApp(
     selectInput("Species", "Species", choices = species_list, selected = ""),
     selectInput("Reviewer1", "Reviewer1", choices = reviewer_list, selected = ""),
     dateInput("Reviewer1_date", "Reviewer1 Date", 
-              value = as.character(Sys.Date()),
+              value = Sys.Date(),
               format = "mm/dd/yyyy"),
     selectInput("Reviewer2", "Reviewer2", choices = reviewer_list, selected = ""),
     dateInput("Reviewer2_date", "Reviewer2 Date", value = "12/31/1999", format = "mm/dd/yyyy"),
