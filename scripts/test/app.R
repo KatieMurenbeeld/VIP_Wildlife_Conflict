@@ -69,7 +69,7 @@ loadData <- function() {
 # Define UI for app that can append to a google sheet  from input options
 shinyApp(
   ui <- fluidPage(
-    useShinyFeedback(),
+    #useShinyFeedback(),
     dataTableOutput("entries", width = 300), tags$hr(),
     titlePanel("Wildlife Conflict Data Entry"),
     textInput("article_title", "Article Title", ""),
