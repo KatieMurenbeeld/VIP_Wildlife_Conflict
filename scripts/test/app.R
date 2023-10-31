@@ -1,4 +1,5 @@
 library(shiny)
+library(shinyFeedback)
 library(dplyr)
 library(ggplot2)
 library(googlesheets4)
@@ -54,7 +55,7 @@ table <- "entries"
 
 saveData <- function(data) {
   # The data must be a dataframe rather than a named vector
-  #data <- data %>% as.list() %>% data.frame() 
+  data <- data %>% as.list() %>% data.frame() 
   # Add the data as a new row
   sheet_append(sheet_id, data)
 }
@@ -68,6 +69,7 @@ loadData <- function() {
 # Define UI for app that can append to a google sheet  from input options
 shinyApp(
   ui <- fluidPage(
+    useShinyFeedback(),
     dataTableOutput("entries", width = 300), tags$hr(),
     titlePanel("Wildlife Conflict Data Entry"),
     textInput("article_title", "Article Title", ""),
@@ -76,7 +78,8 @@ shinyApp(
     textInput("city", "City", ""),
     selectInput("species", "Species", choices = species_list, selected = ""),
     selectInput("reviewer", "Reviewer", choices = reviewer_list, selected = ""),
-    dateInput("review_date", "Review Date", "2023-09-01"),
+    textInput("review_date", "Review Date", "mm/dd/yyyy"),
+    #textOutput("date"),
     selectInput("type", "Type", choices = conflict_type, selected = ""),
     selectInput("focus", "Focus", choices = conflict_focus, selected = ""),
     sliderInput("value_orientation", "Value Orientation", min = 1, max = 7, value = 1),
@@ -87,11 +90,12 @@ shinyApp(
   # Define server logic ----
   server <- function(input, output, session) {
     
+    
     # Whenever a field is filled, aggregate all form data
     formData <- reactive({
       data <- sapply(fields, function(x) input[[x]])
-      data <- data %>% as.list() %>% 
-        data.frame(as.character(input$review_date))
+      #data <- data %>% as.list() %>% 
+      #  data.frame(as.character(input$review_date))
     })
     
     
