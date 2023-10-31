@@ -108,7 +108,7 @@ shinyApp(
                 choices = reviewer_list, 
                 selected = ""),
     dateInput("Reviewer2_date", "Reviewer2 Date", 
-              value = NA, 
+              value = NA,
               format = "mm/dd/yyyy"),
     #textInput("review_date", "Review Date", "mm/dd/yyyy"),
     #textOutput("date"),
