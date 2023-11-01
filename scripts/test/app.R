@@ -62,11 +62,11 @@ conflict_focus <- c("Wildlife",
                     "Ecosystem")
 
 # Define function to use in server logic
-table <- "entries"
+#table <- "entries"
 
 saveData <- function(data) {
   # The data must be a dataframe rather than a named vector
-  #data <- data %>% as.list() %>% data.frame() 
+  data <- data %>% as.list() %>% data.frame() 
   # Add the data as a new row
   sheet_append(sheet_id, data)
 }
@@ -127,7 +127,7 @@ shinyApp(
     # Whenever a field is filled, aggregate all form data
     formData <- eventReactive(input$submit, {
       data <- sapply(fields, function(x) input[[x]])
-      data <- data %>% as.list() %>% as.data.frame()
+      #data <- data %>% as.list() %>% as.data.frame()
       data
     })
     
