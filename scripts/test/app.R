@@ -1,5 +1,4 @@
 library(shiny)
-library(shinyFeedback)
 library(dplyr)
 library(ggplot2)
 library(googlesheets4)
