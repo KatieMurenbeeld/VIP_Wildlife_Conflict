@@ -38,9 +38,9 @@ reviewer_list <- c("LPotter",
                    "BWall",
                    "KMurenbeeld",
                    "MWilliamson",
-                   "MG", 
-                   "PGill",
-                   "HK")
+                   "MGiles", 
+                   "PGillis",
+                   "HKruzich")
 
 species_list <- c("Grizzly Bear",
                   "Boar",
@@ -130,7 +130,6 @@ shinyApp(
       data <- data %>% as.list() %>% as.data.frame()
       data
     })
-    
     
     # When the Submit button is clicked, save the form data
     observeEvent(input$submit, {
