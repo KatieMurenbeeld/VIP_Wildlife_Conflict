@@ -23,9 +23,11 @@ folder <- drive_get(as_id(folder_url))
 
 gdrive_files <- drive_ls(folder)
 id <- gdrive_files[gdrive_files$name == "New Article Coding Framework", ]$id
-drive_download(id, path = "data/new_codes.csv", overwrite = TRUE)
+drive_download(id, path = "shiny_visual/data/original/new_codes.csv", overwrite = TRUE)
 
-article_codes <- read.csv(file = 'data/new_codes.csv')
+article_codes <- read.csv(file = 'shiny_visual/data/original/new_codes.csv')
+
+species_list <- c(unique(article_codes$Species))
 
 #sheet_id <- "https://docs.google.com/spreadsheets/d/1EFbr-GahLJ0Hl01YYheOAjRny8GFxHryFjnD5RNbQUY/edit#gid=0"
 
@@ -34,11 +36,51 @@ article_codes <- read.csv(file = 'data/new_codes.csv')
 library(shiny)
 
 ui <- fluidPage(
-  
+  fluidRow(
+    column(6,
+           selectInput("species", "Species", choices = species_list)
+    )
+  ),
+  fluidRow(
+    column(4, tableOutput("Publication.State")),
+    column(4, tableOutput("Type.of.Conflict")),
+    column(4, tableOutput("Focus.is")),
+    column(4, tableOutput("Value.Orientation.1.7"))
+  ),
+  fluidRow(
+    column(12, plotOutput("state_conflict"))
+  )
 )
 
 server <- function(input, output, session) {
+  selected <- reactive(article_codes %>% filter(Species == input$species))
   
+  output$Publication.State <- renderTable(
+    selected() %>% count(Publication.State, wt = weight, sort = TRUE)
+  )
+  output$Type.of.Conflict <- renderTable(
+    selected() %>% count(Type.of.Conflict, wt = weight, sort = TRUE)
+  )
+  output$Focus.is <- renderTable(
+    selected() %>% count(Focus.is, wt = weight, sort = TRUE)
+  )
+  output$Value.Orientation.1.7 <- renderTable(
+    selected() %>% count(Value.Orientation.1.7, wt = weight, sort = TRUE)
+  )
+  
+  summary <- reactive({
+    selected() %>%
+      count(Publication.State, Type.of.Conflict) %>%
+      left_join(population, by = c("age", "sex")) %>%
+      mutate(rate = n / population * 1e4)
+  })
+  
+  output$state_conflict <- renderPlot({
+    summary() %>%
+      ggplot(aes(age, n, colour = sex)) +
+      geom_line() +
+      labs(y = "Estimated number of injuries")
+  }, res = 96)
 }
 
 shinyApp(ui, server)
