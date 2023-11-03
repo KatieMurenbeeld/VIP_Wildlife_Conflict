@@ -73,17 +73,17 @@ server <- function(input, output, session) {
   
 #  summary <- reactive({
 #    selected() %>%
-#      count(Publication.State, Type.of.Conflict) %>%
-#      left_join(population, by = c("age", "sex")) %>%
-#      mutate(rate = n / population * 1e4)
-#  })
+#      count(Value.Orientation.1.7.) 
+     # left_join(population, by = c("age", "sex")) %>%
+    #  mutate(rate = n / population * 1e4)
+ # })
   
-#  output$state_conflict <- renderPlot({
-#    summary() %>%
-#      ggplot(aes(age, n, colour = sex)) +
-#      geom_line() +
-#      labs(y = "Estimated number of injuries")
-#  }, res = 96)
+  output$state_conflict <- renderPlot({
+    selected() %>%
+      ggplot(aes(x = Value.Orientation.1.7.)) +
+      geom_histogram() +
+      labs(x = "Distribution of Value Orientation")
+  }, res = 96)
 }
 
 shinyApp(ui, server)
