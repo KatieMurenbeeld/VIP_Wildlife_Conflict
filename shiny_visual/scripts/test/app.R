@@ -81,7 +81,7 @@ server <- function(input, output, session) {
   output$state_conflict <- renderPlot({
     selected() %>%
       ggplot(aes(x = Value.Orientation.1.7.)) +
-      geom_histogram() +
+      geom_histogram(color="darkblue", fill="lightblue") +
       labs(x = "Distribution of Value Orientation")
   }, res = 96)
 }
