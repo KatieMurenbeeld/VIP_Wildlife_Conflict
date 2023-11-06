@@ -68,7 +68,19 @@ ggsave("prac_poli_bxplt.png", prac_poli_bxplt, width = 12, height = 12, dpi = 30
 bear_pie <- data %>%
   filter(Species == "Grizzly Bear")
 bear_pie$Publication.State[bear_pie$Publication.State != "MT" & bear_pie$Publication.State != "WA"] <- "Other"
-  
+
+## Create variable for the percentage of Focus.is for MT, WA, and other
+bear_pie <- bear_pie %>%
+  group_by(Publication.State) %>%
+  count(Focus.is) %>%
+  mutate(percent_focus = n / sum(n))
+
+ggplot(bear_pie, aes(x="", y=percent_focus, group=Focus.is, color=Focus.is, fill=Focus.is)) +
+  geom_bar(width = 1, stat = "identity") +
+  coord_polar("y", start=0) + facet_wrap(~ Publication.State) +
+  theme(axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        panel.grid  = element_blank())  
   
   
   
