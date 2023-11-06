@@ -52,8 +52,7 @@ ggsave("value_map_wolves.png", value_map_wolves, width = 12, height = 12, dpi = 
 ## Create dataframe
 
 prac_policy <- data %>%
-  filter(Focus.is == "Practicioner" | Focus.is == "Policy") %>%
-  group_by(Species)
+  filter(Focus.is == "Practicioner" | Focus.is == "Policy")
 
 prac_poli_bxplt <- ggplot(prac_policy, aes(x=Species, y=Value.Orientation.1.7., fill=Focus.is)) +
   geom_boxplot(position=position_dodge(1)) 
@@ -65,5 +64,13 @@ ggsave("prac_poli_bxplt.png", prac_poli_bxplt, width = 12, height = 12, dpi = 30
 ## For Montana, Washington, and all other states combined
 
 ## Create dataframe
+  
+bear_pie <- data %>%
+  filter(Species == "Grizzly Bear")
+bear_pie$Publication.State[bear_pie$Publication.State != "MT" & bear_pie$Publication.State != "WA"] <- "Other"
+  
+  
+  
+  
   
   
