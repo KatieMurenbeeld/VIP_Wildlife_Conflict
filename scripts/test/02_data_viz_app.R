@@ -75,14 +75,14 @@ bear_pie <- bear_pie %>%
   count(Focus.is) %>%
   mutate(percent_focus = n / sum(n))
 
-ggplot(bear_pie, aes(x="", y=percent_focus, group=Focus.is, color=Focus.is, fill=Focus.is)) +
+pie_chart <- ggplot(bear_pie, aes(x="", y=percent_focus, group=Focus.is, color=Focus.is, fill=Focus.is)) +
   geom_bar(width = 1, stat = "identity") +
   coord_polar("y", start=0) + facet_wrap(~ Publication.State) +
   theme(axis.text = element_blank(),
         axis.ticks = element_blank(),
         panel.grid  = element_blank())  
-  
-  
+ggsave("pie_chart.png", pie_chart, width = 12, height = 12, dpi = 300) 
+
   
   
   
