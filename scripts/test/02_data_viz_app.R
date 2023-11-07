@@ -21,7 +21,7 @@ state_df <- data %>%
   group_by(Publication.State) %>%
   summarise(mean_value = mean(Value.Orientation.1.7.), n = n(), n_article = length(unique(Article.Title)))
 
-## Create stat map variable
+## Create state map variable
 us_states <- states(cb = TRUE) %>%
   filter(GEOID < "60") %>%
   filter(GEOID != "02") %>%
