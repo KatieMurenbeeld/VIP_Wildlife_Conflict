@@ -21,11 +21,11 @@ gs4_auth(cache = ".secrets", email = "katiemurenbeeld@boisestate.edu")
 sheet_id <- "https://docs.google.com/spreadsheets/d/18HV8cVgl0rRCB0_NHj-MjModPCWQ30prTOu2_jOr-Ik"
 
 # the fields need to match the google sheet column headers AND the input IDs
-fields <- c("Article Title", "Old Spreadsheet",	"Article Type", 
+fields <- c("Article Title", "Old_Spreadsheet",	"Article Type", 
             "Newspaper", "Publication City", "Publication State",
             "Link", "Species", "Reviewer1", "Reviewer1_date", 
             "Reviewer2", "Reviewer2_date", "Type of Conflict",
-            "Focus is", "Value Orientation(1-7)", "Notes")
+            "Focus is", "Value_Orientation", "Notes")
 
 articletype_list <- c("newswire", 
                       "online", 
@@ -84,8 +84,8 @@ conflict_focus <- c("Wildlife",
 saveData <- function(data) {
   # The data must be a dataframe rather than a named vector
   data <- data %>% as.list() %>% data.frame(
-    Old_Spreadsheet = integer(0),
-    Value_Orientation = integer(0),
+    Old_Spreadsheet = integer(),
+    Value_Orientation = integer(),
   ) 
   # Add the data as a new row
   sheet_append(sheet_id, data)
