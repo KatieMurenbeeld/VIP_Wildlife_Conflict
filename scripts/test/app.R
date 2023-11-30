@@ -17,7 +17,8 @@ library(lubridate)
 
 gs4_auth(cache = ".secrets", email = "katiemurenbeeld@boisestate.edu")
 
-sheet_id <- "https://docs.google.com/spreadsheets/d/1EFbr-GahLJ0Hl01YYheOAjRny8GFxHryFjnD5RNbQUY/edit#gid=0"
+#sheet_id <- "https://docs.google.com/spreadsheets/d/1EFbr-GahLJ0Hl01YYheOAjRny8GFxHryFjnD5RNbQUY/edit#gid=0"
+sheet_id <- "https://docs.google.com/spreadsheets/d/18HV8cVgl0rRCB0_NHj-MjModPCWQ30prTOu2_jOr-Ik"
 
 # the fields need to match the google sheet column headers AND the input IDs
 fields <- c("Article Title", "Old Spreadsheet",	"Article Type", 
@@ -82,7 +83,10 @@ conflict_focus <- c("Wildlife",
 
 saveData <- function(data) {
   # The data must be a dataframe rather than a named vector
-  data <- data %>% as.list() %>% data.frame() 
+  data <- data %>% as.list() %>% data.frame(
+    Old_Spreadsheet = integer(0),
+    Value_Orientation = integer(0),
+  ) 
   # Add the data as a new row
   sheet_append(sheet_id, data)
 }
@@ -99,7 +103,7 @@ shinyApp(
     dataTableOutput("entries", width = 300), tags$hr(),
     titlePanel("Wildlife Conflict Data Entry"),
     textInput("Article Title", "Article Title", ""),
-    numericInput("Old Spreadsheet", "Old Spreadsheet Number", value = NA),
+    numericInput("Old_Spreadsheet", "Old Spreadsheet Number", value = NA),
     selectInput("Article Type", "Article Type", 
                 choices = articletype_list, 
                 selected = ""),
@@ -130,7 +134,7 @@ shinyApp(
     selectInput("Focus is", "Focus is", 
                 choices = conflict_focus, 
                 selected = ""),
-    sliderInput("Value Orientation(1-7)", "Value Orientation", 
+    sliderInput("Value_Orientation", "Value Orientation", 
                 min = 1, max = 7, value = 1),
     textInput("Notes", "Notes", ""),
     actionButton("submit", "Submit"),
@@ -142,9 +146,8 @@ shinyApp(
     
     # Whenever a field is filled, aggregate all form data
     formData <- eventReactive(input$submit, {
-      data <- sapply(fields, function(x) input[[x]])
-      #data <- data %>% as.list() %>% as.data.frame()
-      data
+      df <- sapply(fields, function(x) input[[x]])
+      df
     })
     
     # When the Submit button is clicked, save the form data
