@@ -1,11 +1,9 @@
+# Set up to append to google sheet
+
 library(googlesheets4)
-library(googledrive)
+# In console run:
+# gs4_auth(email = "katiemurenbeeld@boisestate.edu", cache = ".secrets")
+# usethis::use_git_ignore(".secrets")
+# usethis::use_git_ignore("*/.secrets")
 
-gs4_auth(cache = ".secrets", email = "katiemurenbeeld@boisestate.edu")
-
-folder_url <- "https://drive.google.com/drive/u/0/folders/1ob5sagTtT3svhc7ZKeemd9TiAq1_MsCL"
-folder <- drive_get(as_id(folder_url))
-
-gdrive_files <- drive_ls(folder)
-id <- gdrive_files[gdrive_files$name == "New Article Coding Framework", ]$id
-drive_download(id, path = "data/original/new_codes.csv", overwrite = TRUE)
+sheet_id <- "https://docs.google.com/spreadsheets/d/1EFbr-GahLJ0Hl01YYheOAjRny8GFxHryFjnD5RNbQUY/edit#gid=0"

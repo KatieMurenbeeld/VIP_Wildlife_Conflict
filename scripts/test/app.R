@@ -17,15 +17,14 @@ library(lubridate)
 
 gs4_auth(cache = ".secrets", email = "katiemurenbeeld@boisestate.edu")
 
-#sheet_id <- "https://docs.google.com/spreadsheets/d/1EFbr-GahLJ0Hl01YYheOAjRny8GFxHryFjnD5RNbQUY/edit#gid=0"
-sheet_id <- "https://docs.google.com/spreadsheets/d/18HV8cVgl0rRCB0_NHj-MjModPCWQ30prTOu2_jOr-Ik"
+sheet_id <- "https://docs.google.com/spreadsheets/d/1EFbr-GahLJ0Hl01YYheOAjRny8GFxHryFjnD5RNbQUY/edit#gid=0"
 
 # the fields need to match the google sheet column headers AND the input IDs
-fields <- c("Article_Title", "Old_Spreadsheet",	"Article_Type", 
-            "Newspaper", "Publication_City", "Publication_State",
+fields <- c("Article Title", "Old Spreadsheet",	"Article Type", 
+            "Newspaper", "Publication City", "Publication State",
             "Link", "Species", "Reviewer1", "Reviewer1_date", 
-            "Reviewer2", "Reviewer2_date", "Conflict_Type",
-            "Focus", "Value_Orientation", "Notes")
+            "Reviewer2", "Reviewer2_date", "Type of Conflict",
+            "Focus is", "Value Orientation(1-7)", "Notes")
 
 articletype_list <- c("newswire", 
                       "online", 
@@ -33,8 +32,7 @@ articletype_list <- c("newswire",
                       "newspaper", 
                       "local article")
 
-reviewer_list <- c("Not reviewed", 
-                   "LPotter",
+reviewer_list <- c("LPotter",
                    "SBreedlove",
                    "BWall",
                    "KMurenbeeld",
@@ -42,22 +40,6 @@ reviewer_list <- c("Not reviewed",
                    "MGiles", 
                    "PGillis",
                    "HKruzich")
-
-review_date_list <- c("NA",
-                      "Fall 2022",
-                      "Spring 2023",
-                      "Summer 2023",
-                      "Fall 2023",
-                      "Spring 2024",
-                      "Summer 2024",
-                      "Fall 2024",
-                      "Spring 2025",
-                      "Summer 2025",
-                      "Fall 2025",
-                      "Spring 2026",
-                      "Summer 2026",
-                      "Fall 2026",
-                      "Spring 2027")
 
 species_list <- c("Grizzly Bear",
                   "Boar",
@@ -83,24 +65,7 @@ conflict_focus <- c("Wildlife",
 
 saveData <- function(data) {
   # The data must be a dataframe rather than a named vector
-  data <- data %>% as.list() %>% data.frame(
-  #  Article_Title = character(),
-  #  Old_Spreadsheet = integer(),
-  #  Article_Type = character(),
-  #  Newspaper = character(),
-  #  Publication_City = character(),
-  #  Publication_State = character(),
-  #  Link = character(),
-  #  Species = character(),
-  #  Reviewer1 = character(),
-  #  Reviewer1_date = character(),
-  #  Reviewer2 = character(),
-  #  Reviewer2_date = character(),
-  #  Conflict_Type = character(),
-  #  Focus = character(),
-  #  Value_Orientation = integer(),
-  #  Notes = character()
-  ) 
+  data <- data %>% as.list() %>% data.frame() 
   # Add the data as a new row
   sheet_append(sheet_id, data)
 }
@@ -117,7 +82,7 @@ shinyApp(
     dataTableOutput("entries", width = 300), tags$hr(),
     titlePanel("Wildlife Conflict Data Entry"),
     textInput("Article Title", "Article Title", ""),
-    numericInput("Old_Spreadsheet", "Old Spreadsheet Number", value = NA),
+    numericInput("Old Spreadsheet", "Old Spreadsheet", value = NA),
     selectInput("Article Type", "Article Type", 
                 choices = articletype_list, 
                 selected = ""),
@@ -133,22 +98,22 @@ shinyApp(
     selectInput("Reviewer1", "Reviewer1", 
                 choices = reviewer_list, 
                 selected = ""),
-    selectInput("Reviewer1_date", "Reviewer1 Date",
-                choices = review_date_list,
-                selected = "Fall 2023"),
+    dateInput("Reviewer1_date", "Reviewer1 Date", 
+              value = Sys.Date(),
+              format = "mm/dd/yyyy"),
     selectInput("Reviewer2", "Reviewer2", 
-                choices = reviewer_list, 
+                choices = "Not reviewed", 
                 selected = ""),
-    selectInput("Reviewer2_date", "Reviewer2 Date",
-                choices = review_date_list,
-                selected = "NA"),
+    selectInput("Reviewer2_date", "Reviewer2 Date", 
+                choices = "Not reviewed",
+                selected = ""),
     selectInput("Type of Conflict", "Type of Conflict", 
                 choices = conflict_type, 
                 selected = ""),
     selectInput("Focus is", "Focus is", 
                 choices = conflict_focus, 
                 selected = ""),
-    sliderInput("Value_Orientation", "Value Orientation", 
+    sliderInput("Value Orientation(1-7)", "Value Orientation", 
                 min = 1, max = 7, value = 1),
     textInput("Notes", "Notes", ""),
     actionButton("submit", "Submit"),
@@ -160,8 +125,9 @@ shinyApp(
     
     # Whenever a field is filled, aggregate all form data
     formData <- eventReactive(input$submit, {
-      df <- sapply(fields, function(x) input[[x]])
-      df
+      data <- sapply(fields, function(x) input[[x]])
+      #data <- data %>% as.list() %>% as.data.frame()
+      data
     })
     
     # When the Submit button is clicked, save the form data
