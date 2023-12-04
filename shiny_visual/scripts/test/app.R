@@ -13,6 +13,10 @@ article_codes <- read.csv(file = '/Users/kathrynmurenbeeld/Analysis/VIP_Wildlife
 
 species_list <- c(unique(article_codes$Species))
 
+#sheet_id <- "https://docs.google.com/spreadsheets/d/1EFbr-GahLJ0Hl01YYheOAjRny8GFxHryFjnD5RNbQUY/edit#gid=0"
+
+#data <- read_sheet(sheet_id)
+
 library(shiny)
 
 ui <- fluidPage(
