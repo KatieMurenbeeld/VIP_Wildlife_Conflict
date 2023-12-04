@@ -143,7 +143,7 @@ shinyApp(
     # Whenever a field is filled, aggregate all form data
     formData <- eventReactive(input$submit, {
       data <- sapply(fields, function(x) input[[x]])
-      data
+     # data
     })
     
     # When the Submit button is clicked, save the form data
