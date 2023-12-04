@@ -83,24 +83,7 @@ table <- "entries"
 
 saveData <- function(data) {
   # The data must be a dataframe rather than a named vector
-  data <- data %>% as.list() %>% data.frame(
-    Article_Title = character(0),
-    Old_Spreadsheet = integer(0),
-    Article_Type = character(0),
-    Newspaper = character(0),
-    Publication_City = character(0),
-    Publication_State = character(0),
-    Link = character(0),
-    Species = character(0),
-    Reviewer1 = character(0),
-    Reviewer1_date = character(0),
-    Reviewer2 = character(0),
-    Reviewer2_date = character(0),
-    Conflict_Type = character(0),
-    Focus = character(0),
-    Value_Orientation = integer(0),
-    Notes = character(0)
-  ) 
+  data <- data %>% as.list() %>% data.frame() 
   # Add the data as a new row
   sheet_append(sheet_id, data)
 }
