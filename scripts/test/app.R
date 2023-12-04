@@ -84,22 +84,22 @@ table <- "entries"
 saveData <- function(data) {
   # The data must be a dataframe rather than a named vector
   data <- data %>% as.list() %>% data.frame(
-  #  Article_Title = character(),
-  #  Old_Spreadsheet = integer(),
-  #  Article_Type = character(),
-  #  Newspaper = character(),
-  #  Publication_City = character(),
-  #  Publication_State = character(),
-  #  Link = character(),
-  #  Species = character(),
-  #  Reviewer1 = character(),
-  #  Reviewer1_date = character(),
-  #  Reviewer2 = character(),
-  #  Reviewer2_date = character(),
-  #  Conflict_Type = character(),
-  #  Focus = character(),
-  #  Value_Orientation = integer(),
-  #  Notes = character()
+    Article_Title = character(0),
+    Old_Spreadsheet = integer(0),
+    Article_Type = character(0),
+    Newspaper = character(0),
+    Publication_City = character(0),
+    Publication_State = character(0),
+    Link = character(0),
+    Species = character(0),
+    Reviewer1 = character(0),
+    Reviewer1_date = character(0),
+    Reviewer2 = character(0),
+    Reviewer2_date = character(0),
+    Conflict_Type = character(0),
+    Focus = character(0),
+    Value_Orientation = integer(0),
+    Notes = character(0)
   ) 
   # Add the data as a new row
   sheet_append(sheet_id, data)
@@ -159,14 +159,12 @@ shinyApp(
     
     # Whenever a field is filled, aggregate all form data
     formData <- eventReactive(input$submit, {
-      df <- sapply(fields, function(x) input[[x]])
-      df
+      data <- sapply(fields, function(x) input[[x]])
+      data
     })
     
     # When the Submit button is clicked, save the form data
     observeEvent(input$submit, {
-      #data.frame(review_date = as.character(format(input$review_date, "yyyy-mm-dd")))
-      #data.frame(review_date = as_date(input$review_date))
       saveData(formData())
     })
     
@@ -178,7 +176,6 @@ shinyApp(
     })     
   }
 )
-#data$date <- format(as.Date(data$date, origin="1970-01-01"), "%m/%d/%Y")
 
 # Run the app ----
 shinyApp(ui = ui, server = server)
