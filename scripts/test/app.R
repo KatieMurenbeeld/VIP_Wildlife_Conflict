@@ -21,17 +21,6 @@ gs4_auth(cache = ".secrets", email = "katiemurenbeeld@boisestate.edu")
 sheet_id <- "https://docs.google.com/spreadsheets/d/18HV8cVgl0rRCB0_NHj-MjModPCWQ30prTOu2_jOr-Ik"
 
 # the fields need to match the google sheet column headers AND the input IDs
-<<<<<<< HEAD
-fields <- c("article_title",	"publication",	"state",
-            "city",	"species",	"reviewer",	"review_date",
-            "type", "focus",	"value_orientation",	"comments")
-
-reviewer_list <- c("LP",
-                   "SB",
-                   "BW",
-                   "KM",
-                   "MW")
-=======
 fields <- c("Article_Title", "Old_Spreadsheet",	"Article_Type", 
             "Newspaper", "Publication_City", "Publication_State",
             "Link", "Species", "Reviewer1", "Reviewer1_date", 
@@ -53,7 +42,6 @@ reviewer_list <- c("Not reviewed",
                    "MGiles", 
                    "PGillis",
                    "HKruzich")
->>>>>>> parent of 391302c... test revert
 
 review_date_list <- c("NA",
                       "Fall 2022",
@@ -95,9 +83,6 @@ table <- "entries"
 
 saveData <- function(data) {
   # The data must be a dataframe rather than a named vector
-<<<<<<< HEAD
-  data <- data %>% as.list() %>% data.frame()
-=======
   data <- data %>% as.list() %>% data.frame(
   #  Article_Title = character(),
   #  Old_Spreadsheet = integer(),
@@ -116,7 +101,6 @@ saveData <- function(data) {
   #  Value_Orientation = integer(),
   #  Notes = character()
   ) 
->>>>>>> parent of 391302c... test revert
   # Add the data as a new row
   sheet_append(sheet_id, data)
 }
@@ -132,19 +116,6 @@ shinyApp(
   ui <- fluidPage(
     dataTableOutput("entries", width = 300), tags$hr(),
     titlePanel("Wildlife Conflict Data Entry"),
-<<<<<<< HEAD
-    textInput("article_title", "Article Title", ""),
-    textInput("publication", "Publication", ""),
-    selectInput("state", "State" , state.abb, selected = ""),
-    textInput("city", "City", ""),
-    selectInput("species", "Species", choices = species_list, selected = ""),
-    selectInput("reviewer", "Reviewer", choices = reviewer_list, selected = ""),
-    dateInput("review_date", "Review Date", "2023-09-01", format = "mm/dd/yyyy"),
-    selectInput("type", "Type", choices = conflict_type, selected = ""),
-    selectInput("focus", "Focus", choices = conflict_focus, selected = ""),
-    sliderInput("value_orientation", "Value Orientation", min = 1, max = 7, value = 1),
-    textInput("comments", "Comments", ""),
-=======
     textInput("Article Title", "Article Title", ""),
     numericInput("Old_Spreadsheet", "Old Spreadsheet Number", value = NA),
     selectInput("Article Type", "Article Type", 
@@ -180,7 +151,6 @@ shinyApp(
     sliderInput("Value_Orientation", "Value Orientation", 
                 min = 1, max = 7, value = 1),
     textInput("Notes", "Notes", ""),
->>>>>>> parent of 391302c... test revert
     actionButton("submit", "Submit"),
     ),
   
@@ -188,17 +158,9 @@ shinyApp(
   server <- function(input, output, session) {
     
     # Whenever a field is filled, aggregate all form data
-<<<<<<< HEAD
-    formData <- reactive({
-      #input$review_date <- as.character(input$review_date) 
-      # code above results in Warning: Error in $<-: Can't modify read-only reactive value 'review_date'
-      data <- sapply(fields, function(x) input[[x]])
-      #data$review_date <- as.character(data$review_date)
-=======
     formData <- eventReactive(input$submit, {
       df <- sapply(fields, function(x) input[[x]])
       df
->>>>>>> parent of 391302c... test revert
     })
     
     # When the Submit button is clicked, save the form data
@@ -212,7 +174,6 @@ shinyApp(
     # (update with current entry when Submit is clicked)
     output$entries <- renderDataTable({
       input$submit
-      data$review_date <- format(as.Date(date$review_date,  origin="2023-01-01"), "%m/%d/%Y")
       loadData()
     })     
   }
