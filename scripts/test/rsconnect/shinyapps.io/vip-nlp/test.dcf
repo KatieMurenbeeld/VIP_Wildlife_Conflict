@@ -1,0 +1,13 @@
+name: test
+title: test
+username: vip-nlp
+account: vip-nlp
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 9950577
+bundleId: 7796666
+url: https://vip-nlp.shinyapps.io/test/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: 00_Download_Data.R|02_data_viz_app.R|app copy.R
