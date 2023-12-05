@@ -1,4 +1,5 @@
 library(shiny)
+library(shinyFeedback)
 library(dplyr)
 library(ggplot2)
 library(googlesheets4)
@@ -109,7 +110,7 @@ shinyApp(
     selectInput("Publication_State", "Publication State", 
                 state.abb, 
                 selected = ""),
-    textInput("Link", "Link", "https://"),
+    textInput("Link", "Link", ""),
     selectInput("Species", "Species", 
                 choices = species_list, 
                 selected = ""),
