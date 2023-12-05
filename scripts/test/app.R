@@ -19,7 +19,10 @@ library(lubridate)
 gs4_auth(cache = ".secrets", email = "katiemurenbeeld@boisestate.edu")
 
 #sheet_id <- "https://docs.google.com/spreadsheets/d/1EFbr-GahLJ0Hl01YYheOAjRny8GFxHryFjnD5RNbQUY/edit#gid=0"
-sheet_id <- "https://docs.google.com/spreadsheets/d/18HV8cVgl0rRCB0_NHj-MjModPCWQ30prTOu2_jOr-Ik/edit#gid=0"
+#sheet_id <- "https://docs.google.com/spreadsheets/d/18HV8cVgl0rRCB0_NHj-MjModPCWQ30prTOu2_jOr-Ik/edit#gid=0"
+
+# The article coding sheet
+sheet_id <- "https://docs.google.com/spreadsheets/d/1Jc_PqvodlLBQkXpZfkf85NNbFPprCAMWRiMK6NeHNro/edit#gid=0"
 
 # the fields need to match the google sheet column headers AND the input IDs
 fields <- c("Article_Title", "Old_Spreadsheet",	"Article_Type", 
