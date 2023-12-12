@@ -71,11 +71,12 @@ bison_df <- data %>%
   filter(Species == "Bison")
 
 ## Create a variable for the percentage of Focus is... 
-bison_df <- bison_df %>%
+bison_pie_df <- bison_df %>%
   count(Focus) %>%
   mutate(percent_focus = n / sum(n))
-  
-bison_pie_chart <- ggplot(bison_df, aes(x="", y=percent_focus, group=Focus, color=Focus, fill=Focus)) +
+
+## Create the pie chart  
+bison_pie_chart <- ggplot(bison_pie_df, aes(x="", y=percent_focus, group=Focus, color=Focus, fill=Focus)) +
   geom_bar(width = 1, stat = "identity") +
   coord_polar("y", start=0) +
   theme(axis.text = element_blank(),
@@ -83,6 +84,19 @@ bison_pie_chart <- ggplot(bison_df, aes(x="", y=percent_focus, group=Focus, colo
         panel.grid  = element_blank())  
 ggsave("bison_pie_chart.png", bison_pie_chart, width = 12, height = 12, dpi = 300) 
 
+## Calculate the average value orientation by Conflict Type
+bison_mean_val <- bison_df %>%
+  group_by(Conflict_Type) %>%
+  summarise(mean_value = mean(Value_Orientation), n = n())
+
+
+## Create the bar plot
+bison_barplot <- ggplot(bison_mean_val, aes(x=Conflict_Type, y=mean_value,
+                                            color = Conflict_Type,
+                                            fill = Conflict_Type)) +
+  geom_bar(stat = "identity")
+
+ggsave("bison_bar_plot.png", bison_barplot, width = 12, height = 12, dpi = 300)
 
 #################
 ## Mackenzie: 
