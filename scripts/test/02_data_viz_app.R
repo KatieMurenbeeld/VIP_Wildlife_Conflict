@@ -1,6 +1,7 @@
 library(tidyverse)
 library(ggplot2)
 library(ggmap)
+library(ggpie)
 library(sf)
 library(tigris)
 library(scales)
@@ -75,13 +76,19 @@ bison_pie_df <- bison_df %>%
   count(Focus) %>%
   mutate(percent_focus = n / sum(n))
 
+## Create a variable for labels
+bison_pie_df$label <- paste(bison_pie_df$Focus, paste(round(bison_pie_df$percent_focus, 2),"%"))
+
 ## Create the pie chart  
 bison_pie_chart <- ggplot(bison_pie_df, aes(x="", y=percent_focus, group=Focus, color=Focus, fill=Focus)) +
   geom_bar(width = 1, stat = "identity") +
   coord_polar("y", start=0) +
-  theme(axis.text = element_blank(),
-        axis.ticks = element_blank(),
-        panel.grid  = element_blank())  
+  theme(axis.ticks = element_blank(),
+        axis.text.y = element_blank(),
+        axis.text.x = element_text(color='black'),
+        panel.grid  = element_blank()) +
+  scale_y_continuous(breaks=cumsum(bison_pie_df$percent_focus) - bison_pie_df$percent_focus / 2, 
+                     labels= bison_pie_df$label)
 ggsave("bison_pie_chart.png", bison_pie_chart, width = 12, height = 12, dpi = 300) 
 
 ## Calculate the average value orientation by Conflict Type
@@ -107,7 +114,7 @@ ggsave("bison_bar_plot.png", bison_barplot, width = 12, height = 12, dpi = 300)
   
 bear_pie <- data %>%
   filter(Species == "Grizzly Bear")
-bear_pie$Publication.State[bear_pie$Publication_State != "MT" & bear_pie$Publication_State != "WA"] <- "Other"
+bear_pie$Publication_State[bear_pie$Publication_State != "MT" & bear_pie$Publication_State != "WA"] <- "Other"
 
 ## Create variable for the percentage of Focus.is for MT, WA, and other
 bear_pie <- bear_pie %>%
@@ -115,14 +122,17 @@ bear_pie <- bear_pie %>%
   count(Focus) %>%
   mutate(percent_focus = n / sum(n))
 
-pie_chart <- ggplot(bear_pie, aes(x="", y=percent_focus, group=Focus.is, color=Focus.is, fill=Focus.is)) +
+pie_chart <- ggplot(bear_pie, aes(x="", y=percent_focus, group=Focus, color=Focus, fill=Focus)) +
   geom_bar(width = 1, stat = "identity") +
-  coord_polar("y", start=0) + facet_wrap(~ Publication.State) +
+  coord_polar("y", start=0) + facet_wrap(~ Publication_State) +
   theme(axis.text = element_blank(),
         axis.ticks = element_blank(),
         panel.grid  = element_blank())  
-ggsave("pie_chart.png", pie_chart, width = 12, height = 12, dpi = 300) 
+ggsave("bear_pie_chart_2.png", pie_chart, width = 12, height = 12, dpi = 300) 
 
+bear_pie_chart <- ggpie(data = bison_pie_df)
+ggpie(data = bear_pie, group_key = "Focus", count_type = "Publication_State", label_type = "none")
   
-  
-  
+ggpie(bear_pie, Focus, Publication_State, label_size = 3)
+
+
