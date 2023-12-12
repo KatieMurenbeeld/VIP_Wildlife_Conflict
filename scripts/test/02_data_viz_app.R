@@ -111,6 +111,9 @@ ggsave("bison_bar_plot.png", bison_barplot, width = 12, height = 12, dpi = 300)
 ## For Montana, Washington, and all other states combined
 
 ## Create dataframe
+
+bear_df <- data %>%
+  filter(Species == "Grizzly Bear")
   
 bear_pie <- data %>%
   filter(Species == "Grizzly Bear")
@@ -135,4 +138,15 @@ ggpie(data = bear_pie, group_key = "Focus", count_type = "Publication_State", la
   
 ggpie(bear_pie, Focus, Publication_State, label_size = 3)
 
+## Calculate the average value orientation by Conflict Type
+bear_mean_val <- bear_df %>%
+  group_by(Conflict_Type) %>%
+  summarise(mean_value = mean(Value_Orientation), n = n())
 
+## Create the bar plot for Bears
+bear_barplot <- ggplot(bear_mean_val, aes(x=Conflict_Type, y=mean_value,
+                                            color = Conflict_Type,
+                                            fill = Conflict_Type)) +
+  geom_bar(stat = "identity")
+
+ggsave("bear_bar_plot.png", bear_barplot, width = 12, height = 12, dpi = 300)
