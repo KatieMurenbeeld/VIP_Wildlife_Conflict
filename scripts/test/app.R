@@ -64,11 +64,11 @@ review_date_list <- c("NA",
                       "Spring 2027")
 
 species_list <- c("Grizzly Bear",
-                  "Boar",
-                  "Beaver",
-                  "Buffalo",
-                  "Mountain Lion",
-                  "Wolf",
+                  "Boars",
+                  "Beavers",
+                  "Bison",
+                  "Mountain Lions",
+                  "Wolves",
                   "Other")
 
 conflict_type <- c("Human-Wildlife",
