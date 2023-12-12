@@ -9,6 +9,11 @@ library(scales)
 
 data <- read.csv("data/original/new_codes.csv")
 
+## Clean up the Focus variable (multiple spellings of practitioner)
+data$Focus[data$Focus == "Practicioner"] <- "Practitioner"
+data$Focus[data$Focus == "Practioner"] <- "Practitioner"
+data$Focus[data$Focus == "Practioners"] <- "Practitioner"
+
 #################
 ## Patrick: 
 ## Map with Mean Value Orientation as State Fill
@@ -55,12 +60,30 @@ ggsave("value_map_wolves_02.png", value_map_wolves, width = 12, height = 12, dpi
 ## Create dataframe
 
 prac_policy <- data %>%
-  filter(Focus == "Practicioner" | Focus == "Policy")
+  filter(Focus == "Practitioner" | Focus == "Policy")
 
 prac_poli_bxplt <- ggplot(prac_policy, aes(x=Species, y=Value.Orientation.1.7., fill=Focus.is)) +
   geom_boxplot(position=position_dodge(1)) 
 ggsave("prac_poli_bxplt.png", prac_poli_bxplt, width = 12, height = 12, dpi = 300) 
+
+## Create a data frame for just Bison
+bison_df <- data %>%
+  filter(Species == "Bison")
+
+## Create a variable for the percentage of Focus is... 
+bison_df <- bison_df %>%
+  count(Focus) %>%
+  mutate(percent_focus = n / sum(n))
   
+bison_pie_chart <- ggplot(bison_df, aes(x="", y=percent_focus, group=Focus, color=Focus, fill=Focus)) +
+  geom_bar(width = 1, stat = "identity") +
+  coord_polar("y", start=0) +
+  theme(axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        panel.grid  = element_blank())  
+ggsave("bison_pie_chart.png", bison_pie_chart, width = 12, height = 12, dpi = 300) 
+
+
 #################
 ## Mackenzie: 
 ## For bears create 3 pie charts of Focus is
@@ -74,8 +97,8 @@ bear_pie$Publication.State[bear_pie$Publication_State != "MT" & bear_pie$Publica
 
 ## Create variable for the percentage of Focus.is for MT, WA, and other
 bear_pie <- bear_pie %>%
-  group_by(Publication.State) %>%
-  count(Focus.is) %>%
+  group_by(Publication_State) %>%
+  count(Focus) %>%
   mutate(percent_focus = n / sum(n))
 
 pie_chart <- ggplot(bear_pie, aes(x="", y=percent_focus, group=Focus.is, color=Focus.is, fill=Focus.is)) +
