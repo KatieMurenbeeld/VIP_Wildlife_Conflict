@@ -81,7 +81,9 @@ bison_df <- data %>%
 ## Create a variable for the percentage of Focus is... 
 bison_pie_df <- bison_df %>%
   count(Focus) %>%
-  mutate(percent_focus = (n / sum(n))*100)
+  arrange(desc(n)) %>%
+  mutate(percent_focus = (n / sum(n))*100) %>%
+  mutate(ypos = cumsum(percent_focus)- 0.5*percent_focus )
 
 ## Create a variable for labels
 bison_pie_df$label <- paste(bison_pie_df$Focus, paste(round(bison_pie_df$percent_focus, 0),"%"))
@@ -94,9 +96,22 @@ bison_pie_chart <- ggplot(bison_pie_df, aes(x="", y=percent_focus, group=Focus, 
         axis.text.y = element_blank(),
         axis.text.x = element_text(color='black'),
         panel.grid  = element_blank()) +
-  scale_y_continuous(breaks=cumsum(bison_pie_df$percent_focus) - bison_pie_df$percent_focus / 2, 
-                     labels= bison_pie_df$label) +
-  theme_bw()
+  #scale_y_continuous(labels= bison_pie_df$label) +
+  labs(title = "Test",
+       x = "",
+       y = "") +
+  theme_bw()+
+  theme(plot.title = element_text(size=24),
+        strip.text.x = element_text(size=18),
+        axis.title = element_text(size=24),
+        axis.ticks = element_blank(),
+        panel.grid  = element_blank(),
+        legend.position = "none") +
+  
+  #geom_text(aes(y = ypos, label = Focus), color = "white", size=6) +
+  geom_text(aes(y = ypos, label = label), color = "white", size =6) +
+  scale_fill_brewer(palette="Set1")
+
 ggsave("bison_pie_test.png", bison_pie_chart, width = 12, height = 12, dpi = 300) 
 
 ## Calculate the average value orientation by Conflict Type
@@ -110,7 +125,12 @@ bison_barplot <- ggplot(bison_mean_val, aes(x=Conflict_Type, y=mean_value,
                                             color = Conflict_Type,
                                             fill = Conflict_Type)) +
   geom_bar(stat = "identity") +
-  theme_bw()
+  theme_bw() +
+  theme(plot.title = element_text(size=24),
+        strip.text.x = element_text(size=18),
+        axis.title = element_text(size=24),
+        axis.ticks = element_blank(),
+        panel.grid  = element_blank())
 
 ggsave("bison_bar_test.png", bison_barplot, width = 12, height = 12, dpi = 300)
 
@@ -135,12 +155,17 @@ bear_pie <- bear_pie %>%
   mutate(percent_focus = (n / sum(n)) * 100)
 
 pie_chart <- ggplot(bear_pie, aes(x="", y=percent_focus, group=Focus, color=Focus, fill=Focus)) +
-  geom_bar(width = 1, stat = "identity") +
+  geom_bar(width = 1, stat = "identity", show.legend = TRUE) +
   coord_polar("y", start=0) + facet_wrap(~ Publication_State) +
-  theme(axis.text = element_blank(),
+  labs(title = "Grizzly Bear: Difference in Proportion of Focus for MT, WA, and Rest of USA",
+       x = "", 
+       y = "") +
+  theme_bw() +
+  theme(plot.title = element_text(size=24),
+        strip.text.x = element_text(size=18),
+        axis.title = element_text(size=24),
         axis.ticks = element_blank(),
-        panel.grid  = element_blank()) +
-  theme_bw()
+        panel.grid  = element_blank())
 
 ggsave("bear_pie_chart_test.png", pie_chart, width = 12, height = 12, dpi = 300) 
 
@@ -164,7 +189,7 @@ bear_barplot <- ggplot(bear_mean_val, aes(x=Conflict_Type, y=mean_value,
        x = "Conflict Type",
        y = "Mean Value Orientation") +
   theme_bw() +
-  theme(
+  theme(plot.title = element_text(size = 24),
         axis.text = element_text(size = 18),
         axis.title = element_text(size = 24))
 
