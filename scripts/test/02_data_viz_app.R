@@ -51,9 +51,11 @@ value_map_wolves <- ggplot() +
   labs(title = "Mean Value Orientation",
        subtitle = "Wolves") +
  # scale_fill_discrete(name = "Mean Value Orientation") +
+  theme(plot.title = element_text(size=24),
+        ) +
   theme_bw()
 
-ggsave("value_map_wolves_test.png", value_map_wolves, width = 14, height = 14, dpi = 300) 
+ggsave("value_map_wolves_pres.png", value_map_wolves, width = 14, height = 14, dpi = 300) 
 # Note to self: update labels of legend to show mutualistic at 0 and domination at 7
 # Also check with Patrick about colors
   
@@ -89,7 +91,7 @@ bison_pie_df <- bison_df %>%
 bison_pie_df$label <- paste(bison_pie_df$Focus, paste(round(bison_pie_df$percent_focus, 0),"%"))
 
 ## Create the pie chart  
-bison_pie_chart <- ggplot(bison_pie_df, aes(x="", y=percent_focus, group=Focus, color=Focus, fill=Focus)) +
+bison_pie_chart <- ggplot(bison_pie_df, aes(x="", y=percent_focus, group=Focus, color="white", fill=Focus)) +
   geom_bar(width = 1, stat = "identity") +
   coord_polar("y", start=0) +
   theme(axis.ticks = element_blank(),
@@ -97,7 +99,7 @@ bison_pie_chart <- ggplot(bison_pie_df, aes(x="", y=percent_focus, group=Focus, 
         axis.text.x = element_text(color='black'),
         panel.grid  = element_blank()) +
   #scale_y_continuous(labels= bison_pie_df$label) +
-  labs(title = "Test",
+  labs(title = "Bison: Proportion of Focus",
        x = "",
        y = "") +
   theme_bw()+
@@ -112,7 +114,7 @@ bison_pie_chart <- ggplot(bison_pie_df, aes(x="", y=percent_focus, group=Focus, 
   geom_text(aes(y = ypos, label = label), color = "white", size =6) +
   scale_fill_brewer(palette="Set1")
 
-ggsave("bison_pie_test.png", bison_pie_chart, width = 12, height = 12, dpi = 300) 
+ggsave("bison_pie_pres.png", bison_pie_chart, width = 12, height = 12, dpi = 300) 
 
 ## Calculate the average value orientation by Conflict Type
 bison_mean_val <- bison_df %>%
@@ -124,15 +126,17 @@ bison_mean_val <- bison_df %>%
 bison_barplot <- ggplot(bison_mean_val, aes(x=Conflict_Type, y=mean_value,
                                             color = Conflict_Type,
                                             fill = Conflict_Type)) +
-  geom_bar(stat = "identity") +
+  geom_bar(stat = "identity", show.legend = FALSE) +
+  ylim(0,8) +
+  labs(title = "Bison: Value Orientation by Conflict Type",
+       x = "Conflict Type",
+       y = "Mean Value Orientation") +
   theme_bw() +
-  theme(plot.title = element_text(size=24),
-        strip.text.x = element_text(size=18),
-        axis.title = element_text(size=24),
-        axis.ticks = element_blank(),
-        panel.grid  = element_blank())
+  theme(plot.title = element_text(size = 24),
+        axis.text = element_text(size = 18),
+        axis.title = element_text(size = 24))
 
-ggsave("bison_bar_test.png", bison_barplot, width = 12, height = 12, dpi = 300)
+ggsave("bison_bar_pres.png", bison_barplot, width = 12, height = 12, dpi = 300)
 
 #################
 ## Mackenzie: 
@@ -165,14 +169,10 @@ pie_chart <- ggplot(bear_pie, aes(x="", y=percent_focus, group=Focus, color=Focu
         strip.text.x = element_text(size=18),
         axis.title = element_text(size=24),
         axis.ticks = element_blank(),
-        panel.grid  = element_blank())
+        panel.grid  = element_blank())  +
+  scale_fill_brewer(palette="Set1")
 
-ggsave("bear_pie_chart_test.png", pie_chart, width = 12, height = 12, dpi = 300) 
-
-bear_pie_chart <- ggpie(data = bison_pie_df)
-ggpie(data = bear_pie, group_key = "Focus", count_type = "Publication_State", label_type = "none")
-  
-ggpie(bear_pie, Focus, Publication_State, label_size = 3)
+ggsave("bear_pie_pres.png", pie_chart, width = 12, height = 12, dpi = 300) 
 
 ## Calculate the average value orientation by Conflict Type
 bear_mean_val <- bear_df %>%
@@ -193,7 +193,7 @@ bear_barplot <- ggplot(bear_mean_val, aes(x=Conflict_Type, y=mean_value,
         axis.text = element_text(size = 18),
         axis.title = element_text(size = 24))
 
-ggsave("bear_bar_test.png", bear_barplot, width = 12, height = 12, dpi = 300)
+ggsave("bear_bar_pres.png", bear_barplot, width = 12, height = 12, dpi = 300)
 
 #### Testing ggpie
 ggpie(data = bear_pie, group_key = "Focus", count_type = "full", label_type = "none")
