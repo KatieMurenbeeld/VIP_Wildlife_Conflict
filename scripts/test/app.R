@@ -35,7 +35,10 @@ articletype_list <- c("newswire",
                       "online", 
                       "blog", 
                       "newspaper", 
-                      "local article")
+                      "local article",
+                      "op-ed",
+                      "guest editorial",
+                      "editorial")
 
 reviewer_list <- c("Not reviewed", 
                    "LPotter",
@@ -45,7 +48,11 @@ reviewer_list <- c("Not reviewed",
                    "MWilliamson",
                    "MGiles", 
                    "PGillis",
-                   "HKruzich")
+                   "HKruzich", 
+                   "IRodriguez",
+                   "CKelly",
+                   "JGrantham",
+                   "LSmith")
 
 review_date_list <- c("NA",
                       "Fall 2022",
@@ -63,12 +70,13 @@ review_date_list <- c("NA",
                       "Fall 2026",
                       "Spring 2027")
 
-species_list <- c("Grizzly Bear",
+species_list <- c("Grizzly Bears",
                   "Boars",
                   "Beavers",
                   "Bison",
-                  "Mountain Lions",
+                  "Bob Cats",
                   "Wolves",
+                  "Alligators,"
                   "Other")
 
 conflict_type <- c("Human-Wildlife",
