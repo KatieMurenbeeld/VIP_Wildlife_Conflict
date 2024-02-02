@@ -76,7 +76,7 @@ species_list <- c("Grizzly Bears",
                   "Bison",
                   "Bob Cats",
                   "Wolves",
-                  "Alligators,"
+                  "Alligators",
                   "Other")
 
 conflict_type <- c("Human-Wildlife",
