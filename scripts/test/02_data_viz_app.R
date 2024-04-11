@@ -14,6 +14,18 @@ data <- read.csv("data/original/new_codes.csv")
 data$Focus[data$Focus == "Practicioner"] <- "Practitioner"
 data$Focus[data$Focus == "Practioner"] <- "Practitioner"
 data$Focus[data$Focus == "Practioners"] <- "Practitioner"
+data$Species[data$Species == "Grizzly Bear"] <- "Grizzly Bears"
+data$Species[data$Species == "Other"] <- "Coyotes"
+data <- data %>%
+  filter(Species != "Bob Cats")
+data$Conflict_Type <- trimws(data$Conflict_Type)
+data$Conflict_Type[data$Conflict_Type == "H-H"] <- "Human-Human"
+data$Conflict_Type[data$Conflict_Type == "H-W"] <- "Human-Wildlife"
+data$Conflict_Type[data$Conflict_Type == "N-W"] <- "Nature-Wildlife"
+data$Conflict_Type[data$Conflict_Type == "Unstated Conflict"] <- "Unstated"
+
+
+
 
 #################
 ## Patrick: 
@@ -23,9 +35,9 @@ data$Focus[data$Focus == "Practioners"] <- "Practitioner"
 
 state_df <- data %>%
   drop_na(Value_Orientation) %>%
-  filter(Species == "Wolves") %>%
+  #filter(Species == "Wolves") %>%
   group_by(Publication_State) %>%
-  summarise(mean_value = mean(Value_Orientation), n = n(), n_article = length(unique(Article_Title)))
+  summarise(mean_value = mean(Value_Orientation), n = n(), n_article = length(unique(Title)))
 
 ## Create state map variable
 us_states <- states(cb = TRUE) %>%
@@ -37,25 +49,103 @@ us_states <- states(cb = TRUE) %>%
 state_val <- right_join(state_df, us_states, by = c("Publication_State" = "STUSPS"))
 
 
-value_map_wolves <- ggplot() +
+conflict_map <- ggplot() +
   geom_sf(data = us_states, fill = NA, color = "black", size = 0.1) +
-  geom_sf(data = state_val, aes(geometry = geometry, fill = mean_value), size = 0.05) +
-  scale_fill_gradient2(name = "Value Orientation", 
+  geom_sf(data = state_val, aes(geometry = geometry, fill = n_article), size = 0.05) +
+  scale_fill_gradient2(name = "Number of Articles", 
                        na.value = "white",
-                       low = "yellow",
-                       mid = "green",
+                       low = "lightgrey",
+                       mid = "lightblue",
                        high = "navy",
-                       midpoint = 4,
-                       breaks = c(1,4,7),
-                       labels = c("Mutualist","Nuetral", "Domination")) + 
-  labs(title = "Mean Value Orientation",
-       subtitle = "Wolves") +
+                       midpoint = 20,
+                       breaks = c(1,20,40,60),
+                       #labels = c("Mutualist","Nuetral", "Domination")
+                       ) + 
+  labs(title = "Reported Conflict, n = 481",
+       subtitle = "Number of Unique Articles") +
  # scale_fill_discrete(name = "Mean Value Orientation") +
   theme(plot.title = element_text(size=24),
         ) +
   theme_bw()
 
-ggsave("value_map_wolves_pres.png", value_map_wolves, width = 14, height = 14, dpi = 300) 
+conflict_map
+ggsave(here::here("urs_figures/conflict_map.png"), conflict_map, width = 14, height = 14, dpi = 300) 
+
+data_pnw <- data %>%
+  filter(Publication_State == "WA" | Publication_State == "OR" | Publication_State == "MT" | Publication_State == "ID")
+
+# box plots with value orientation for beavers and bears and wolves
+pnw_values <- 
+  data_pnw %>%
+  filter(Species == "Grizzly Bears" | Species == "Wolves" | Species == "Beavers") %>%
+  ggplot( aes(x=Species, y=Value_Orientation, fill=Species)) +
+  geom_boxplot(notch = FALSE,
+               alpha = 0.4) +
+  theme_bw() +
+  theme(
+    legend.position="none",
+    plot.title = element_text(size=12)
+  ) +
+  #scale_y_discrete(labels=c("1" = "Mutualistic", 
+  #                          "4" = "Neutral",
+  #                          "7" = "Domination")
+  #                 ) +
+  ggtitle("Value Orientation for Beavers, Bears, and Wolves in the PNW") +
+  ylab("Value Orientation") + 
+  xlab("")
+pnw_values
+
+ggsave(here::here("urs_figures/pnw_values.png"), pnw_values, width = 14, height = 14, dpi = 300) 
+
+pnw_species <- 
+  data_pnw %>%
+  count(Species, sort = TRUE) %>%
+  ggplot(aes(x=Species, y=n, fill=Species)) +
+  geom_col() +
+  theme_bw() +
+  theme(
+    legend.position="none",
+    plot.title = element_text(size=12)
+  ) +
+  ggtitle("Number of Articles for Each Species, PNW") +
+  ylab("Count") + 
+  xlab("")
+pnw_species
+ggsave(here::here("urs_figures/pnw_species.png"), pnw_species, width = 14, height = 14, dpi = 300) 
+
+pnw_focus <- 
+  data_pnw %>%
+  count(Focus, sort = TRUE) %>%
+  ggplot(aes(x=Focus, y=n, fill=Focus)) +
+  geom_col() +
+  theme_bw() +
+  theme(
+    legend.position="none",
+    plot.title = element_text(size=12)
+  ) +
+  ggtitle("Number of Articles by Focus, PNW") +
+  ylab("Count") + 
+  xlab("")
+pnw_focus
+ggsave(here::here("urs_figures/pnw_focus.png"), pnw_focus, width = 14, height = 14, dpi = 300) 
+
+pnw_conflict <- 
+  data_pnw %>%
+  count(Conflict_Type, sort = TRUE) %>%
+  ggplot(aes(x=Conflict_Type, y=n, fill=Conflict_Type)) +
+  geom_col() +
+  theme_bw() +
+  theme(
+    legend.position="none",
+    plot.title = element_text(size=12)
+  ) +
+  ggtitle("Number of Articles by Conflict, PNW") +
+  ylab("Count") + 
+  xlab("")
+pnw_conflict
+ggsave(here::here("urs_figures/pnw_conflict.png"), pnw_conflict, width = 14, height = 14, dpi = 300) 
+
+
 # Note to self: update labels of legend to show mutualistic at 0 and domination at 7
 # Also check with Patrick about colors
   
