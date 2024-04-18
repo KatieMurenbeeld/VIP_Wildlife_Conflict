@@ -5,10 +5,29 @@ library(ggpie)
 library(sf)
 library(tigris)
 library(scales)
+library(RColorBrewer)
 
 # Load the data
 
 data <- read.csv("data/original/new_codes.csv")
+
+# Set colorblind friendly palettes
+SpecScale <- scale_fill_manual(values = c("Wolves" = "#999999", "Grizzly Bears" = "#E69F00",
+                                          "Alligators" = "#009E73", "Beavers" = "#56B4E9", 
+                                          "Bison" = "#D55E00", "Coyotes" = "#F0E442",
+                                          "Boars" = "#CC79A7"))
+FocusScale <- scale_fill_manual(values = c("Wildlife" = "#999999", "People" = "#E69F00",
+                                           "Ecosystem" = "#009E73", "Policy" = "#56B4E9", 
+                                           "Practitioner" = "#F0E442"))
+ConflictScale <- scale_fill_manual(values = c("Human-Wildlife" = "#999999", "Human-Human" = "#E69F00",
+                                              "Nature-Wildlife" = "#009E73", "Unstated" = "#56B4E9"))
+
+# Set the URS figures theme
+theme_urs <- theme_bw() +
+  theme(
+    legend.position="none",
+    text = element_text(size = 24)
+  )
 
 ## Clean up the Focus variable (multiple spellings of practitioner)
 data$Focus[data$Focus == "Practicioner"] <- "Practitioner"
@@ -26,8 +45,6 @@ data$Conflict_Type[data$Conflict_Type == "H-H"] <- "Human-Human"
 data$Conflict_Type[data$Conflict_Type == "H-W"] <- "Human-Wildlife"
 data$Conflict_Type[data$Conflict_Type == "N-W"] <- "Nature-Wildlife"
 data$Conflict_Type[data$Conflict_Type == "Unstated Conflict"] <- "Unstated"
-
-
 
 
 #################
@@ -67,12 +84,85 @@ conflict_map <- ggplot() +
   labs(title = "Reported Conflict, n = 481",
        subtitle = "Number of Unique Articles") +
  # scale_fill_discrete(name = "Mean Value Orientation") +
-  theme(plot.title = element_text(size=24),
-        ) +
-  theme_bw()
+  theme_urs +
+  theme_update(axis.text.x=element_blank(), 
+               axis.ticks.x=element_blank(), 
+               axis.text.y=element_blank(), 
+               axis.ticks.y=element_blank(),
+               ) 
 
 conflict_map
-#ggsave(here::here("urs_figures/conflict_map.png"), conflict_map, width = 14, height = 14, dpi = 300) 
+ggsave(here::here("urs_figures/conflict_map_15x12.png"), conflict_map, width = 15, height = 12, dpi = 300) 
+
+conus_species <- 
+  data %>%
+  count(Species, sort = TRUE) %>%
+  ggplot(aes(x=Species, y=n, fill = factor(Species))) +
+  SpecScale +
+  geom_col() +
+  theme_bw() +
+  theme_urs +
+  ggtitle("Number of Articles for Each Species") +
+  ylab("Count") + 
+  xlab("")
+conus_species
+ggsave(here::here("urs_figures/conus_species_c04182024.png"), conus_species, width = 14, height = 14, dpi = 300) 
+
+conus_focus <- 
+  data %>%
+  filter(Focus != "") %>%
+  count(Focus, sort = TRUE) %>%
+  ggplot(aes(x=Focus, y=n, fill=Focus)) +
+  FocusScale +
+  geom_col() +
+  theme_bw() +
+  theme_urs +
+  ggtitle("Number of Articles for Each Focus") +
+  ylab("Count") + 
+  xlab("")
+conus_focus
+ggsave(here::here("urs_figures/conus_focus_c04182024.png"), conus_focus, width = 14, height = 14, dpi = 300) 
+
+conus_conflict <- 
+  data %>%
+  filter(Conflict_Type != "") %>%
+  count(Conflict_Type, sort = TRUE) %>%
+  ggplot(aes(x=Conflict_Type, y=n, fill=Conflict_Type)) +
+  ConflictScale +
+  geom_col() +
+  theme_bw() +
+  theme_urs +
+  ggtitle("Number of Articles for Each Conflict Type") +
+  ylab("Count") + 
+  xlab("")
+conus_conflict
+ggsave(here::here("urs_figures/conus_conflict_c04182024.png"), conus_conflict, width = 14, height = 14, dpi = 300) 
+
+conus_value_bar <- 
+  data %>%
+  filter(!is.na(Value_Orientation)) %>%
+  group_by(Species) %>%
+  #filter(Species == "Wolves" | Species == "Grizzly Bears" | Species == "Bison") %>%
+  count(Value_Orientation, sort = TRUE) %>%
+  ggplot(aes(x = as.factor(Value_Orientation), y = n, fill = Species)) +
+  SpecScale +
+  geom_col() +
+  theme_bw() +
+  theme_urs +
+  ggtitle("Number of Articles by Value Orientation") +
+  scale_x_discrete(labels=c("1" = "Mutualistic", 
+                            "2" = "", 
+                            "3" = "",
+                            "4" = "Neutral",
+                            "5" = "",
+                            "6" = "",
+                            "7" = "Domination")
+  ) +
+  ylab("Count") + 
+  xlab("") + 
+  facet_wrap(~Species, ncol = 1)
+conus_value_bar
+ggsave(here::here("urs_figures/conus_value_bar_c04182024.png"), conus_value_bar, width = 10, height = 30, dpi = 300) 
 
 #---Northwestern States-----------
 
@@ -82,85 +172,75 @@ data_pnw <- data %>%
 # box plots with value orientation for beavers and bears and wolves
 pnw_values_box <- 
   data_pnw %>%
-  filter(Species == "Grizzly Bears" | Species == "Wolves" | Species == "Beavers") %>%
-  ggplot( aes(x=Species, y=Value_Orientation, fill=Species)) +
+  #filter(Species == "Grizzly Bears" | Species == "Wolves" | Species == "Beavers") %>%
+  ggplot( aes(x=Species, y=Value_Orientation, fill= Species)) +
+  SpecScale +
   geom_boxplot(notch = FALSE,
                alpha = 0.4) +
   theme_bw() +
-  theme(
-    legend.position="none",
-    plot.title = element_text(size=12)
-  ) +
-  ggtitle("Value Orientation for Beavers, Bears, and Wolves in the PNW") +
+  theme_urs +
+  ggtitle("Value Orientation for Species in the PNW") +
   ylab("Value Orientation") + 
   xlab("")
 pnw_values_box
 
-ggsave(here::here("urs_figures/pnw_values_box.png"), pnw_values, width = 14, height = 14, dpi = 300) 
+ggsave(here::here("urs_figures/pnw_values_box_c04182024.png"), pnw_values_box, width = 14, height = 14, dpi = 300) 
 
 pnw_species <- 
   data_pnw %>%
   count(Species, sort = TRUE) %>%
   ggplot(aes(x=Species, y=n, fill=Species)) +
+  SpecScale +
   geom_col() +
   theme_bw() +
-  theme(
-    legend.position="none",
-    plot.title = element_text(size=12)
-  ) +
+  theme_urs +
   ggtitle("Number of Articles for Each Species, PNW") +
   ylab("Count") + 
   xlab("")
 pnw_species
-#ggsave(here::here("urs_figures/pnw_species.png"), pnw_species, width = 14, height = 14, dpi = 300) 
+ggsave(here::here("urs_figures/pnw_species_c04182024.png"), pnw_species, width = 14, height = 14, dpi = 300) 
 
 pnw_focus <- 
   data_pnw %>%
+  filter(Focus != "") %>%
   count(Focus, sort = TRUE) %>%
   ggplot(aes(x=Focus, y=n, fill=Focus)) +
+  FocusScale +
   geom_col() +
   theme_bw() +
-  theme(
-    legend.position="none",
-    plot.title = element_text(size=12)
-  ) +
+  theme_urs +
   ggtitle("Number of Articles by Focus, PNW") +
   ylab("Count") + 
   xlab("")
 pnw_focus
-#ggsave(here::here("urs_figures/pnw_focus.png"), pnw_focus, width = 14, height = 14, dpi = 300) 
+ggsave(here::here("urs_figures/pnw_focus_04182024.png"), pnw_focus, width = 14, height = 14, dpi = 300) 
 
 pnw_conflict <- 
   data_pnw %>%
   filter(Conflict_Type != "") %>%
   count(Conflict_Type, sort = TRUE) %>%
   ggplot(aes(x=Conflict_Type, y=n, fill=Conflict_Type)) +
+  ConflictScale +
   geom_col() +
   theme_bw() +
-  theme(
-    legend.position="none",
-    plot.title = element_text(size=12)
-  ) +
+  theme_urs +
   ggtitle("Number of Articles by Conflict, PNW") +
   ylab("Count") + 
   xlab("")
 pnw_conflict
-ggsave(here::here("urs_figures/pnw_conflict.png"), pnw_conflict, width = 14, height = 14, dpi = 300) 
-
+ggsave(here::here("urs_figures/pnw_conflict_04182024.png"), pnw_conflict, width = 14, height = 14, dpi = 300) 
 
 pnw_value_bar <- 
   data_pnw %>%
   filter(!is.na(Value_Orientation)) %>%
   group_by(Species) %>%
-  filter(Species == "Wolves" | Species == "Grizzly Bears" | Species == "Bison") %>%
+  #filter(Species == "Wolves" | Species == "Grizzly Bears" | Species == "Bison") %>%
   count(Value_Orientation, sort = TRUE) %>%
   ggplot(aes(x = as.factor(Value_Orientation), y = n, fill = Species)) +
+  SpecScale +
   geom_col() +
   theme_bw() +
-  theme(
-    legend.position="none",
-    plot.title = element_text(size=12)
-  ) +
+  theme_urs +
   ggtitle("Number of Articles by Value Orientation, PNW") +
   scale_x_discrete(labels=c("1" = "Mutualistic", 
                             "2" = "", 
@@ -172,11 +252,9 @@ pnw_value_bar <-
   ) +
   ylab("Count") + 
   xlab("") + 
-  facet_wrap(~Species)
+  facet_wrap(~Species, ncol = 1)
 pnw_value_bar
-
-ggsave(here::here("urs_figures/pnw_value_bar.png"), pnw_value_bar, width = 14, height = 14, dpi = 300) 
-
+ggsave(here::here("urs_figures/pnw_value_bar_c04182024.png"), pnw_value_bar, width = 10, height = 30, dpi = 300) 
 
 #---Southeastern States-----------
 se_states <- c("KY", "VA", "NC", "SC", "GA", "FL", "AL", "MS", "LA", "TX", "AR")
@@ -185,83 +263,72 @@ data_se <- data %>%
 
 se_values_box <- 
   data_se %>%
-  filter(Species == "Alligators" | Species == "Beavers" | Species == "Boars" | Species == "Coyotes") %>%
   ggplot( aes(x=Species, y=Value_Orientation, fill=Species)) +
+  SpecScale +
   geom_boxplot(notch = FALSE,
                alpha = 0.4) +
   theme_bw() +
-  theme(
-    legend.position="none",
-    plot.title = element_text(size=12)
-  ) +
-  ggtitle("Value Orientation for Alligators, Beavers, Boars, and Coyotes in the SE") +
+  theme_urs +
+  ggtitle("Value Orientation for Species in the SE") +
   ylab("Value Orientation") + 
   xlab("")
 se_values_box
-ggsave(here::here("urs_figures/se_values_box.png"), se_values_box, width = 14, height = 14, dpi = 300) 
+ggsave(here::here("urs_figures/se_values_box_c04182024.png"), se_values_box, width = 14, height = 14, dpi = 300) 
 
 se_species <- 
   data_se %>%
   count(Species, sort = TRUE) %>%
   ggplot(aes(x=Species, y=n, fill=Species)) +
+  SpecScale +
   geom_col() +
   theme_bw() +
-  theme(
-    legend.position="none",
-    plot.title = element_text(size=12)
-  ) +
+  theme_urs +
   ggtitle("Number of Articles for Each Species, SE") +
   ylab("Count") + 
   xlab("")
 se_species
-ggsave(here::here("urs_figures/se_species.png"), se_species, width = 14, height = 14, dpi = 300) 
+ggsave(here::here("urs_figures/se_species_c04182024.png"), se_species, width = 14, height = 14, dpi = 300) 
 
 se_focus <- 
   data_se %>%
   count(Focus, sort = TRUE) %>%
   ggplot(aes(x=Focus, y=n, fill=Focus)) +
+  FocusScale +
   geom_col() +
   theme_bw() +
-  theme(
-    legend.position="none",
-    plot.title = element_text(size=12)
-  ) +
+  theme_urs +
   ggtitle("Number of Articles by Focus, PNW") +
   ylab("Count") + 
   xlab("")
 se_focus
-ggsave(here::here("urs_figures/se_focus.png"), se_focus, width = 14, height = 14, dpi = 300) 
+ggsave(here::here("urs_figures/se_focus_c04182024.png"), se_focus, width = 14, height = 14, dpi = 300) 
 
 se_conflict <- 
   data_se %>%
   count(Conflict_Type, sort = TRUE) %>%
   ggplot(aes(x=Conflict_Type, y=n, fill=Conflict_Type)) +
+  ConflictScale +
   geom_col() +
   theme_bw() +
-  theme(
-    legend.position="none",
-    plot.title = element_text(size=12)
-  ) +
+  theme_urs +
   ggtitle("Number of Articles by Conflict, SE") +
   ylab("Count") + 
   xlab("")
 se_conflict
-ggsave(here::here("urs_figures/se_conflict.png"), se_conflict, width = 14, height = 14, dpi = 300) 
+ggsave(here::here("urs_figures/se_conflict_c04182024.png"), se_conflict, width = 14, height = 14, dpi = 300) 
 
 
 se_value_bar <- 
   data_se %>%
   filter(!is.na(Value_Orientation)) %>%
   group_by(Species) %>%
-  filter(Species == "Alligators" | Species == "Beavers" | Species == "Boars" | Species == "Coyotes") %>%
+  #filter(Species == "Alligators" | Species == "Beavers" | Species == "Boars" | Species == "Coyotes") %>%
   count(Value_Orientation, sort = TRUE) %>%
   ggplot(aes(x = as.factor(Value_Orientation), y = n, fill = Species)) +
+  SpecScale +
   geom_col() +
   theme_bw() +
-  theme(
-    legend.position="none",
-    plot.title = element_text(size=12)
-  ) +
+  theme_urs +
   ggtitle("Number of Articles by Value Orientation, SE") +
   scale_x_discrete(labels=c("1" = "Mutualistic", 
                             "2" = "", 
@@ -273,9 +340,9 @@ se_value_bar <-
   ) +
   ylab("Count") + 
   xlab("") + 
-  facet_wrap(~Species)
+  facet_wrap(~Species, ncol = 1)
 se_value_bar
-ggsave(here::here("urs_figures/se_value_bar.png"), se_value_bar, width = 14, height = 14, dpi = 300) 
+ggsave(here::here("urs_figures/se_value_bar_c04182024.png"), se_value_bar, width = 14, height = 30, dpi = 300) 
 
 #---Northeastern States---------
 
@@ -287,66 +354,58 @@ ne_values_box <-
   data_ne %>%
   #filter(Species == "Alligators" | Species == "Beavers" | Species == "Boars" | Species == "Coyotes") %>%
   ggplot( aes(x=Species, y=Value_Orientation, fill=Species)) +
+  SpecScale +
   geom_boxplot(notch = FALSE,
                alpha = 0.4) +
   theme_bw() +
-  theme(
-    legend.position="none",
-    plot.title = element_text(size=12)
-  ) +
+  theme_urs +
   ggtitle("Value Orientation for Species in NE") +
   ylab("Value Orientation") + 
   xlab("")
 ne_values_box
-ggsave(here::here("urs_figures/ne_values_box.png"), ne_values_box, width = 14, height = 14, dpi = 300) 
+ggsave(here::here("urs_figures/ne_values_box_c04182024.png"), ne_values_box, width = 14, height = 14, dpi = 300) 
 
 ne_species <- 
   data_ne %>%
   count(Species, sort = TRUE) %>%
   ggplot(aes(x=Species, y=n, fill=Species)) +
+  SpecScale +
   geom_col() +
   theme_bw() +
-  theme(
-    legend.position="none",
-    plot.title = element_text(size=12)
-  ) +
+  theme_urs +
   ggtitle("Number of Articles for Each Species, NE") +
   ylab("Count") + 
   xlab("")
 ne_species
-ggsave(here::here("urs_figures/ne_species.png"), ne_species, width = 14, height = 14, dpi = 300) 
+ggsave(here::here("urs_figures/ne_species_c04182024.png"), ne_species, width = 14, height = 14, dpi = 300) 
 
 ne_focus <- 
   data_ne %>%
   count(Focus, sort = TRUE) %>%
   ggplot(aes(x=Focus, y=n, fill=Focus)) +
+  FocusScale + 
   geom_col() +
   theme_bw() +
-  theme(
-    legend.position="none",
-    plot.title = element_text(size=12)
-  ) +
+  theme_urs +
   ggtitle("Number of Articles by Focus, NE") +
   ylab("Count") + 
   xlab("")
 ne_focus
-ggsave(here::here("urs_figures/ne_focus.png"), ne_focus, width = 14, height = 14, dpi = 300) 
+ggsave(here::here("urs_figures/ne_focus_c04182024.png"), ne_focus, width = 14, height = 14, dpi = 300) 
 
 ne_conflict <- 
   data_ne %>%
   count(Conflict_Type, sort = TRUE) %>%
   ggplot(aes(x=Conflict_Type, y=n, fill=Conflict_Type)) +
+  ConflictScale + 
   geom_col() +
   theme_bw() +
-  theme(
-    legend.position="none",
-    plot.title = element_text(size=12)
-  ) +
+  theme_urs +
   ggtitle("Number of Articles by Conflict, NE") +
   ylab("Count") + 
   xlab("")
 ne_conflict
-ggsave(here::here("urs_figures/ne_conflict.png"), ne_conflict, width = 14, height = 14, dpi = 300) 
+ggsave(here::here("urs_figures/ne_conflict_c04182024.png"), ne_conflict, width = 14, height = 14, dpi = 300) 
 
 
 ne_value_bar <- 
@@ -356,12 +415,10 @@ ne_value_bar <-
   #filter(Species == "Alligators" | Species == "Beavers" | Species == "Boars" | Species == "Coyotes") %>%
   count(Value_Orientation, sort = TRUE) %>%
   ggplot(aes(x = as.factor(Value_Orientation), y = n, fill = Species)) +
+  SpecScale + 
   geom_col() +
   theme_bw() +
-  theme(
-    legend.position="none",
-    plot.title = element_text(size=12)
-  ) +
+  theme_urs +
   ggtitle("Number of Articles by Value Orientation, NE") +
   scale_x_discrete(labels=c("1" = "Mutualistic", 
                             "2" = "", 
@@ -373,9 +430,9 @@ ne_value_bar <-
   ) +
   ylab("Count") + 
   xlab("") + 
-  facet_wrap(~Species)
+  facet_wrap(~Species, ncol = 1)
 ne_value_bar
-ggsave(here::here("urs_figures/ne_value_bar.png"), ne_value_bar, width = 14, height = 14, dpi = 300) 
+ggsave(here::here("urs_figures/ne_value_bar_c04182024.png"), ne_value_bar, width = 14, height = 30, dpi = 300) 
 
 #---Western States--------
 we_states <- c("CA", "NV", "AZ", "CO", "UT", "NM")
@@ -386,66 +443,58 @@ we_values_box <-
   data_se %>%
   #filter(Species == "Alligators" | Species == "Beavers" | Species == "Boars" | Species == "Coyotes") %>%
   ggplot( aes(x=Species, y=Value_Orientation, fill=Species)) +
+  SpecScale + 
   geom_boxplot(notch = FALSE,
                alpha = 0.4) +
   theme_bw() +
-  theme(
-    legend.position="none",
-    plot.title = element_text(size=12)
-  ) +
+  theme_urs +
   ggtitle("Value Orientation for Species in Western US") +
   ylab("Value Orientation") + 
   xlab("")
 we_values_box
-ggsave(here::here("urs_figures/we_values_box.png"), we_values_box, width = 14, height = 14, dpi = 300) 
+ggsave(here::here("urs_figures/we_values_box_c04182024.png"), we_values_box, width = 14, height = 14, dpi = 300) 
 
 we_species <- 
   data_we %>%
   count(Species, sort = TRUE) %>%
   ggplot(aes(x=Species, y=n, fill=Species)) +
+  SpecScale + 
   geom_col() +
   theme_bw() +
-  theme(
-    legend.position="none",
-    plot.title = element_text(size=12)
-  ) +
+  theme_urs +
   ggtitle("Number of Articles for Each Species, WE") +
   ylab("Count") + 
   xlab("")
 we_species
-ggsave(here::here("urs_figures/we_species.png"), we_species, width = 14, height = 14, dpi = 300) 
+ggsave(here::here("urs_figures/we_species_c04182024.png"), we_species, width = 14, height = 14, dpi = 300) 
 
 we_focus <- 
   data_we %>%
   count(Focus, sort = TRUE) %>%
   ggplot(aes(x=Focus, y=n, fill=Focus)) +
+  FocusScale + 
   geom_col() +
   theme_bw() +
-  theme(
-    legend.position="none",
-    plot.title = element_text(size=12)
-  ) +
+  theme_urs +
   ggtitle("Number of Articles by Focus, WE") +
   ylab("Count") + 
   xlab("")
 we_focus
-ggsave(here::here("urs_figures/we_focus.png"), we_focus, width = 14, height = 14, dpi = 300) 
+ggsave(here::here("urs_figures/we_focus_c04182024.png"), we_focus, width = 14, height = 14, dpi = 300) 
 
 we_conflict <- 
   data_we %>%
   count(Conflict_Type, sort = TRUE) %>%
   ggplot(aes(x=Conflict_Type, y=n, fill=Conflict_Type)) +
+  ConflictScale + 
   geom_col() +
   theme_bw() +
-  theme(
-    legend.position="none",
-    plot.title = element_text(size=12)
-  ) +
+  theme_urs +
   ggtitle("Number of Articles by Conflict, WE") +
   ylab("Count") + 
   xlab("")
 we_conflict
-ggsave(here::here("urs_figures/we_conflict.png"), we_conflict, width = 14, height = 14, dpi = 300) 
+ggsave(here::here("urs_figures/we_conflict_c04182024.png"), we_conflict, width = 14, height = 14, dpi = 300) 
 
 
 we_value_bar <- 
@@ -455,12 +504,10 @@ we_value_bar <-
   #filter(Species == "Alligators" | Species == "Beavers" | Species == "Boars" | Species == "Coyotes") %>%
   count(Value_Orientation, sort = TRUE) %>%
   ggplot(aes(x = as.factor(Value_Orientation), y = n, fill = Species)) +
+  SpecScale + 
   geom_col() +
   theme_bw() +
-  theme(
-    legend.position="none",
-    plot.title = element_text(size=12)
-  ) +
+  theme_urs +
   ggtitle("Number of Articles by Value Orientation, WE") +
   scale_x_discrete(labels=c("1" = "Mutualistic", 
                             "2" = "", 
@@ -472,9 +519,9 @@ we_value_bar <-
   ) +
   ylab("Count") + 
   xlab("") + 
-  facet_wrap(~Species)
+  facet_wrap(~Species, ncol = 1)
 we_value_bar
-ggsave(here::here("urs_figures/we_value_bar.png"), we_value_bar, width = 14, height = 14, dpi = 300) 
+ggsave(here::here("urs_figures/we_value_bar_c04182024.png"), we_value_bar, width = 14, height = 30, dpi = 300) 
 
 #---Plains and Midwest-------
 mw_states <- c("OK", "SD", "ND", "MN", "WI", "MI", "IA", "IN", "MO", "IL", "MI", "OH")
@@ -485,66 +532,58 @@ mw_values_box <-
   data_mw %>%
   #filter(Species == "Alligators" | Species == "Beavers" | Species == "Boars" | Species == "Coyotes") %>%
   ggplot( aes(x=Species, y=Value_Orientation, fill=Species)) +
+  SpecScale +
   geom_boxplot(notch = FALSE,
                alpha = 0.4) +
   theme_bw() +
-  theme(
-    legend.position="none",
-    plot.title = element_text(size=12)
-  ) +
+  theme_urs +
   ggtitle("Value Orientation for Species in the MW") +
   ylab("Value Orientation") + 
   xlab("")
 mw_values_box
-ggsave(here::here("urs_figures/mw_values_box.png"), mw_values_box, width = 14, height = 14, dpi = 300) 
+ggsave(here::here("urs_figures/mw_values_box_c04182024.png"), mw_values_box, width = 14, height = 14, dpi = 300) 
 
 mw_species <- 
   data_mw %>%
   count(Species, sort = TRUE) %>%
   ggplot(aes(x=Species, y=n, fill=Species)) +
+  SpecScale +
   geom_col() +
   theme_bw() +
-  theme(
-    legend.position="none",
-    plot.title = element_text(size=12)
-  ) +
+  theme_urs +
   ggtitle("Number of Articles for Each Species, MW") +
   ylab("Count") + 
   xlab("")
 mw_species
-ggsave(here::here("urs_figures/mw_species.png"), mw_species, width = 14, height = 14, dpi = 300) 
+ggsave(here::here("urs_figures/mw_species_c04182024.png"), mw_species, width = 14, height = 14, dpi = 300) 
 
 mw_focus <- 
   data_mw %>%
   count(Focus, sort = TRUE) %>%
   ggplot(aes(x=Focus, y=n, fill=Focus)) +
+  FocusScale +
   geom_col() +
   theme_bw() +
-  theme(
-    legend.position="none",
-    plot.title = element_text(size=12)
-  ) +
+  theme_urs +
   ggtitle("Number of Articles by Focus, MW") +
   ylab("Count") + 
   xlab("")
 mw_focus
-ggsave(here::here("urs_figures/mw_focus.png"), mw_focus, width = 14, height = 14, dpi = 300) 
+ggsave(here::here("urs_figures/mw_focus_c04182024.png"), mw_focus, width = 14, height = 14, dpi = 300) 
 
 mw_conflict <- 
   data_mw %>%
   count(Conflict_Type, sort = TRUE) %>%
   ggplot(aes(x=Conflict_Type, y=n, fill=Conflict_Type)) +
+  ConflictScale +
   geom_col() +
   theme_bw() +
-  theme(
-    legend.position="none",
-    plot.title = element_text(size=12)
-  ) +
+  theme_urs +
   ggtitle("Number of Articles by Conflict, SE") +
   ylab("Count") + 
   xlab("")
 mw_conflict
-ggsave(here::here("urs_figures/mw_conflict.png"), mw_conflict, width = 14, height = 14, dpi = 300) 
+ggsave(here::here("urs_figures/mw_conflict_c04182024.png"), mw_conflict, width = 14, height = 14, dpi = 300) 
 
 
 mw_value_bar <- 
@@ -554,12 +593,10 @@ mw_value_bar <-
   #filter(Species == "Alligators" | Species == "Beavers" | Species == "Boars" | Species == "Coyotes") %>%
   count(Value_Orientation, sort = TRUE) %>%
   ggplot(aes(x = as.factor(Value_Orientation), y = n, fill = Species)) +
+  SpecScale +
   geom_col() +
   theme_bw() +
-  theme(
-    legend.position="none",
-    plot.title = element_text(size=12)
-  ) +
+  theme_urs +
   ggtitle("Number of Articles by Value Orientation, MW") +
   scale_x_discrete(labels=c("1" = "Mutualistic", 
                             "2" = "", 
@@ -571,9 +608,9 @@ mw_value_bar <-
   ) +
   ylab("Count") + 
   xlab("") + 
-  facet_wrap(~Species)
+  facet_wrap(~Species, ncol = 1)
 mw_value_bar
-ggsave(here::here("urs_figures/mw_value_bar.png"), mw_value_bar, width = 14, height = 14, dpi = 300) 
+ggsave(here::here("urs_figures/mw_value_bar_c04182024.png"), mw_value_bar, width = 14, height = 30, dpi = 300) 
 
 
 #---2023 URS figures-----------
