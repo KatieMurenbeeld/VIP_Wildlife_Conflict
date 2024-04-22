@@ -23,11 +23,10 @@ ConflictScale <- scale_fill_manual(values = c("Human-Wildlife" = "#999999", "Hum
                                               "Nature-Wildlife" = "#009E73", "Unstated" = "#56B4E9"))
 
 # Set the URS figures theme
-theme_urs <- theme_bw() +
-  theme(
-    legend.position="none",
-    text = element_text(size = 24)
-  )
+theme_urs <- theme(legend.position="none",
+                   text = element_text(size = 36),
+                   axis.text.x = element_text(angle = 45)
+                   )
 
 ## Clean up the Focus variable (multiple spellings of practitioner)
 data$Focus[data$Focus == "Practicioner"] <- "Practitioner"
@@ -84,7 +83,8 @@ conflict_map <- ggplot() +
   labs(title = "Reported Conflict, n = 481",
        subtitle = "Number of Unique Articles") +
  # scale_fill_discrete(name = "Mean Value Orientation") +
-  theme_urs +
+  theme(legend.position="none",
+        text = element_text(size = 36)) +
   theme_update(axis.text.x=element_blank(), 
                axis.ticks.x=element_blank(), 
                axis.text.y=element_blank(), 
@@ -101,12 +101,13 @@ conus_species <-
   SpecScale +
   geom_col() +
   theme_bw() +
-  theme_urs +
+  theme(legend.position="none",
+        text = element_text(size = 36)) +
   ggtitle("Number of Articles for Each Species") +
   ylab("Count") + 
   xlab("")
 conus_species
-ggsave(here::here("urs_figures/conus_species_c04182024.png"), conus_species, width = 14, height = 14, dpi = 300) 
+ggsave(here::here("urs_figures/conus_species_c04182024.png"), conus_species, width = 18, height = 14, dpi = 300) 
 
 conus_focus <- 
   data %>%
@@ -131,7 +132,8 @@ conus_conflict <-
   ConflictScale +
   geom_col() +
   theme_bw() +
-  theme_urs +
+  theme(legend.position="none",
+        text = element_text(size = 36)) +
   ggtitle("Number of Articles for Each Conflict Type") +
   ylab("Count") + 
   xlab("")
@@ -168,6 +170,8 @@ ggsave(here::here("urs_figures/conus_value_bar_c04182024.png"), conus_value_bar,
 
 data_pnw <- data %>%
   filter(Publication_State == "WA" | Publication_State == "OR" | Publication_State == "MT" | Publication_State == "ID" | Publication_State == "WY")
+
+data_pnw$region <- "Northwest"
 
 # box plots with value orientation for beavers and bears and wolves
 pnw_values_box <- 
@@ -256,10 +260,40 @@ pnw_value_bar <-
 pnw_value_bar
 ggsave(here::here("urs_figures/pnw_value_bar_c04182024.png"), pnw_value_bar, width = 10, height = 30, dpi = 300) 
 
+pnw_value_bar_02 <- 
+  data_pnw %>%
+  filter(!is.na(Value_Orientation)) %>%
+  group_by(Species) %>%
+  filter(Species == "Wolves" | Species == "Grizzly Bears" | Species == "Beavers") %>%
+  count(Value_Orientation, sort = TRUE) %>%
+  ggplot(aes(x = as.factor(Value_Orientation), y = n, fill = Species)) +
+  SpecScale +
+  geom_col() +
+  theme_bw() +
+  theme(legend.position="none",
+        text = element_text(size = 36),
+        panel.spacing = unit(2, "lines")) +
+  ggtitle("Number of Articles by Value Orientation, PNW") +
+  scale_x_discrete(labels=c("1" = "Mut.", 
+                            "2" = "", 
+                            "3" = "",
+                            "4" = "Neutral",
+                            "5" = "",
+                            "6" = "",
+                            "7" = "Dom.")
+  ) +
+  ylab("Count") + 
+  xlab("") + 
+  facet_wrap(~Species, ncol = 3)
+pnw_value_bar_02
+ggsave(here::here("urs_figures/pnw_value_bar_02_c04182024.png"), pnw_value_bar_02, width = 30, height = 12, dpi = 300) 
+
 #---Southeastern States-----------
 se_states <- c("KY", "VA", "NC", "SC", "GA", "FL", "AL", "MS", "LA", "TX", "AR")
 data_se <- data %>%
   filter(Publication_State %in% se_states)
+
+data_se$region <- "Southeast"
 
 se_values_box <- 
   data_se %>%
@@ -344,11 +378,40 @@ se_value_bar <-
 se_value_bar
 ggsave(here::here("urs_figures/se_value_bar_c04182024.png"), se_value_bar, width = 14, height = 30, dpi = 300) 
 
+se_value_bar_02 <- 
+  data_se %>%
+  filter(!is.na(Value_Orientation)) %>%
+  group_by(Species) %>%
+  filter(Species == "Alligators" |Species == "Coyotes" | Species == "Wolves") %>%
+  count(Value_Orientation, sort = TRUE) %>%
+  ggplot(aes(x = as.factor(Value_Orientation), y = n, fill = Species)) +
+  SpecScale +
+  geom_col() +
+  theme_bw() +
+  theme(legend.position="none",
+        text = element_text(size = 36),
+        panel.spacing = unit(2, "lines")) +
+  ggtitle("Number of Articles by Value Orientation, SE") +
+  scale_x_discrete(labels=c("1" = "Mut.", 
+                            "2" = "", 
+                            "3" = "",
+                            "4" = "Neutral",
+                            "5" = "",
+                            "6" = "",
+                            "7" = "Dom.")
+  ) +
+  ylab("Count") + 
+  xlab("") + 
+  facet_wrap(~Species, ncol = 3)
+se_value_bar_02
+ggsave(here::here("urs_figures/se_value_bar_02_c04182024.png"), se_value_bar_02, width = 30, height = 12, dpi = 300) 
+
 #---Northeastern States---------
 
 ne_states <- c("PA", "NY", "NJ", "NH", "RI", "MA", "VT", "ME", "CT")
 data_ne <- data %>%
   filter(Publication_State %in% ne_states)
+data_ne$region <- "Northeast"
 
 ne_values_box <- 
   data_ne %>%
@@ -434,10 +497,40 @@ ne_value_bar <-
 ne_value_bar
 ggsave(here::here("urs_figures/ne_value_bar_c04182024.png"), ne_value_bar, width = 14, height = 30, dpi = 300) 
 
+ne_value_bar_02 <- 
+  data_ne %>%
+  filter(!is.na(Value_Orientation)) %>%
+  group_by(Species) %>%
+  filter(Species == "Beavers" | Species == "Coyotes" | Species == "Wolves") %>%
+  count(Value_Orientation, sort = TRUE) %>%
+  ggplot(aes(x = as.factor(Value_Orientation), y = n, fill = Species)) +
+  #xlim(1,7) +
+  SpecScale + 
+  geom_col() +
+  theme_bw() +
+  theme(legend.position="none",
+        text = element_text(size = 36),
+        panel.spacing = unit(2, "lines")) +
+  ggtitle("Number of Articles by Value Orientation, NE") +
+  scale_x_discrete(labels=c("1" = "Mut.", 
+                            "2" = "", 
+                            "3" = "",
+                            "4" = "Neutral",
+                            "5" = "",
+                            "6" = "Dom.",
+                            "7" = "Dom.")
+  ) +
+  ylab("Count") + 
+  xlab("") + 
+  facet_wrap(~Species, ncol = 3)
+ne_value_bar_02
+ggsave(here::here("urs_figures/ne_value_bar_02_c04182024.png"), ne_value_bar_02, width = 20, height = 10, dpi = 300) 
+
 #---Western States--------
 we_states <- c("CA", "NV", "AZ", "CO", "UT", "NM")
 data_we <- data %>%
   filter(Publication_State %in% we_states)
+data_we$region <- "West"
 
 we_values_box <- 
   data_se %>%
@@ -523,10 +616,39 @@ we_value_bar <-
 we_value_bar
 ggsave(here::here("urs_figures/we_value_bar_c04182024.png"), we_value_bar, width = 14, height = 30, dpi = 300) 
 
+we_value_bar_02 <- 
+  data_we %>%
+  filter(!is.na(Value_Orientation)) %>%
+  group_by(Species) %>%
+  filter(Species == "Wolves" | Species == "Beavers" | Species == "Coyotes") %>%
+  count(Value_Orientation, sort = TRUE) %>%
+  ggplot(aes(x = as.factor(Value_Orientation), y = n, fill = Species)) +
+  SpecScale + 
+  geom_col() +
+  theme_bw() +
+  theme(legend.position="none",
+        text = element_text(size = 36),
+        panel.spacing = unit(2, "lines")) +
+  ggtitle("Number of Articles by Value Orientation, WE") +
+  scale_x_discrete(labels=c("1" = "Mut.", 
+                            "2" = "", 
+                            "3" = "",
+                            "4" = "Neutral",
+                            "5" = "",
+                            "6" = "",
+                            "7" = "Dom.")
+  ) +
+  ylab("Count") + 
+  xlab("") + 
+  facet_wrap(~Species, ncol = 3)
+we_value_bar_02
+ggsave(here::here("urs_figures/we_value_bar_02_c04182024.png"), we_value_bar_02, width = 30, height = 12, dpi = 300) 
+
 #---Plains and Midwest-------
 mw_states <- c("OK", "SD", "ND", "MN", "WI", "MI", "IA", "IN", "MO", "IL", "MI", "OH")
 data_mw <- data %>%
   filter(Publication_State %in% mw_states)
+data_mw$region <- "Midwest-Plains"
 
 mw_values_box <- 
   data_mw %>%
@@ -611,6 +733,127 @@ mw_value_bar <-
   facet_wrap(~Species, ncol = 1)
 mw_value_bar
 ggsave(here::here("urs_figures/mw_value_bar_c04182024.png"), mw_value_bar, width = 14, height = 30, dpi = 300) 
+
+mw_value_bar_02 <- 
+  data_mw %>%
+  filter(!is.na(Value_Orientation)) %>%
+  group_by(Species) %>%
+  filter(Species == "Wolves" | Species == "Beavers" | Species == "Coyotes") %>%
+  count(Value_Orientation, sort = TRUE) %>%
+  ggplot(aes(x = as.factor(Value_Orientation), y = n, fill = Species)) +
+  SpecScale +
+  geom_col() +
+  theme_bw() +
+  theme(legend.position="none",
+        text = element_text(size = 36),
+        panel.spacing = unit(2, "lines")) +
+  ggtitle("Number of Articles by Value Orientation, MW") +
+  scale_x_discrete(labels=c("1" = "Mut.", 
+                            "2" = "", 
+                            "3" = "",
+                            "4" = "Neutral",
+                            "5" = "",
+                            "6" = "",
+                            "7" = "Dom.")
+  ) +
+  ylab("Count") + 
+  xlab("") + 
+  facet_wrap(~Species, ncol = 3)
+mw_value_bar_02
+ggsave(here::here("urs_figures/mw_value_bar_02_c04182024.png"), mw_value_bar_02, width = 30, height = 12, dpi = 300) 
+
+#---NNNN------
+
+data_reg <- rbind(data_pnw, data_se, data_ne, data_mw, data_we)
+
+reg_value_bar_wolves <- 
+  data_reg %>%
+  filter(!is.na(Value_Orientation)) %>%
+  group_by(Species, region) %>%
+  #filter(Species == "Wolves" | Species == "Beavers" | Species == "Coyotes" | Species == "Grizzly Bears") %>%
+  filter(Species == "Wolves") %>%
+  count(Value_Orientation, sort = TRUE) %>%
+  ungroup() %>%
+  ggplot(aes(x = as.factor(Value_Orientation), y = n, fill = Species)) +
+  SpecScale +
+  geom_col() +
+  theme_bw() +
+  theme(legend.position="none",
+        text = element_text(size = 36),
+        panel.spacing = unit(1, "lines")) +
+  ggtitle("Value Orientation Toward Wolves by Region") +
+  scale_x_discrete(labels=c("1" = "Mut.", 
+                            "2" = "", 
+                            "3" = "",
+                            "4" = "Neutral",
+                            "5" = "",
+                            "6" = "",
+                            "7" = "Dom.")
+  ) +
+  ylab("Count") + 
+  xlab("") + 
+  facet_wrap(~region, ncol = 1)
+reg_value_bar_wolves
+ggsave(here::here("urs_figures/mw_value_bar_wolves_c04182024.png"), reg_value_bar_wolves, width = 15, height = 36, dpi = 300) 
+
+reg_value_bar_coyotes <- 
+  data_reg %>%
+  filter(!is.na(Value_Orientation)) %>%
+  group_by(Species, region) %>%
+  #filter(Species == "Wolves" | Species == "Beavers" | Species == "Coyotes" | Species == "Grizzly Bears") %>%
+  filter(Species == "Coyotes") %>%
+  count(Value_Orientation, sort = TRUE) %>%
+  ungroup() %>%
+  ggplot(aes(x = as.factor(Value_Orientation), y = n, fill = Species)) +
+  SpecScale +
+  geom_col() +
+  theme_bw() +
+  theme(legend.position="none",
+        text = element_text(size = 24),
+        panel.spacing = unit(1, "lines")) +
+  ggtitle("Value Orientation Toward Coyotes by Region") +
+  scale_x_discrete(labels=c("1" = "Mut.", 
+                            "2" = "", 
+                            "3" = "",
+                            "4" = "Neutral",
+                            "5" = "",
+                            "6" = "",
+                            "7" = "Dom.")
+  ) +
+  ylab("Count") + 
+  xlab("") + 
+  facet_wrap(~region, ncol = 1)
+reg_value_bar_coyotes
+ggsave(here::here("urs_figures/mw_value_bar_coyotes_c04182024.png"), reg_value_bar_coyotes, width = 12, height = 30, dpi = 300) 
+
+reg_value_bar_beavers <- 
+  data_reg %>%
+  filter(!is.na(Value_Orientation)) %>%
+  group_by(Species, region) %>%
+  #filter(Species == "Wolves" | Species == "Beavers" | Species == "Coyotes" | Species == "Grizzly Bears") %>%
+  filter(Species == "Beavers") %>%
+  count(Value_Orientation, sort = TRUE) %>%
+  ungroup() %>%
+  ggplot(aes(x = as.factor(Value_Orientation), y = n, fill = Species)) +
+  SpecScale +
+  geom_col() +
+  theme_bw() +
+  theme_urs +
+  ggtitle("") +
+  scale_x_discrete(labels=c("1" = "Mutualistic", 
+                            "2" = "", 
+                            "3" = "",
+                            "4" = "Neutral",
+                            "5" = "",
+                            "6" = "",
+                            "7" = "Domination")
+  ) +
+  ylab("Count") + 
+  xlab("") + 
+  facet_wrap(~region, ncol = 1)
+reg_value_bar_beavers
+ggsave(here::here("urs_figures/mw_value_bar_beavers_c04182024.png"), reg_value_bar_beavers, width = 12, height = 30, dpi = 300) 
+
 
 
 #---2023 URS figures-----------
